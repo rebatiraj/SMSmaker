@@ -16,17 +16,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
-    --paper:#F1EDE1;
-    --paper-line:#DDD5C0;
-    --card:#FCFBF6;
-    --ink:#20242E;
-    --ink-soft:#6B7080;
-    --ink-faint:#9AA0AE;
-    --gold:#9C7A28;
-    --due:#2E6B52;
-    --minus:#AE3E3E;
-    --focus:#20242E;
-    --radius:3px;
+    --paper:#EDE6CF;
+    --paper-line:#C4B693;
+    --card:#FFFFFF;
+    --ink:#14161F;
+    --ink-soft:#454B5E;
+    --ink-faint:#6E7488;
+    --gold:#8A6510;
+    --due:#146B41;
+    --minus:#B8222F;
+    --focus:#14161F;
+    --radius:8px;
     box-sizing:border-box;
     padding-top:env(safe-area-inset-top,0px);
     padding-bottom:env(safe-area-inset-bottom,0px);
@@ -34,30 +34,6 @@
   *{box-sizing:border-box;}
   html{scroll-padding-top:env(safe-area-inset-top,0px);}
   html,body{height:100%;}
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --paper:#171A22;
-      --paper-line:#2A2E3A;
-      --card:#1E222C;
-      --ink:#E9E7DD;
-      --ink-soft:#9BA0AF;
-      --ink-faint:#666C7C;
-      --gold:#D2AC55;
-      --due:#7FCBA8;
-      --minus:#E38080;
-    }
-  }
-  :root[data-theme="dark"]{
-    --paper:#171A22;
-    --paper-line:#2A2E3A;
-    --card:#1E222C;
-    --ink:#E9E7DD;
-    --ink-soft:#9BA0AF;
-    --ink-faint:#666C7C;
-    --gold:#D2AC55;
-    --due:#7FCBA8;
-    --minus:#E38080;
-  }
 
   body{
     margin:0;
@@ -67,39 +43,39 @@
     font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
     display:flex;
     justify-content:center;
-    padding:40px 20px 56px;
+    padding:24px 18px 36px;
   }
 
   .wrap{ width:100%; max-width:1040px; }
 
   header{
-    margin-bottom:28px;
+    margin-bottom:16px;
   }
   .kicker{
     font-family:"IBM Plex Mono",ui-monospace,monospace;
-    font-size:0.72rem;
+    font-size:0.7rem;
     letter-spacing:0.14em;
     color:var(--gold);
-    margin-bottom:6px;
+    margin-bottom:3px;
   }
   header h1{
     font-family:"Fraunces",Georgia,"Times New Roman",serif;
     font-weight:600;
-    font-size:2.1rem;
-    margin:0 0 6px;
+    font-size:1.7rem;
+    margin:0 0 4px;
     letter-spacing:-0.01em;
   }
   header p{
     margin:0;
     color:var(--ink-soft);
-    font-size:0.95rem;
+    font-size:0.88rem;
     max-width:52ch;
   }
 
   .board{
     display:grid;
     grid-template-columns: minmax(320px,1fr) minmax(340px,1.05fr);
-    gap:24px;
+    gap:16px;
     align-items:start;
   }
   @media (max-width:820px){
@@ -110,31 +86,31 @@
     background:var(--card);
     border:1px solid var(--paper-line);
     border-radius:var(--radius);
-    padding:26px 26px 28px;
+    padding:16px 16px 18px;
   }
 
   .section-title{
     font-family:"IBM Plex Mono",ui-monospace,monospace;
-    font-size:0.7rem;
-    letter-spacing:0.1em;
+    font-size:0.66rem;
+    letter-spacing:0.09em;
     color:var(--ink-faint);
-    margin:0 0 14px;
+    margin:0 0 5px;
   }
-  .section-title.spaced{ margin-top:26px; }
+  .section-title.spaced{ margin-top:8px; }
 
-  .field{ margin-bottom:14px; }
+  .field{ margin-bottom:3px; }
   .field label{
     display:block;
-    font-size:0.83rem;
+    font-size:0.76rem;
     color:var(--ink-soft);
-    margin-bottom:6px;
+    margin-bottom:2px;
   }
   .field .optional{ color:var(--ink-faint); font-weight:400; }
   .field input, .field select{
     width:100%;
     font-family:"Inter",sans-serif;
-    font-size:0.98rem;
-    padding:9px 11px;
+    font-size:0.88rem;
+    padding:5px 9px;
     border:1px solid var(--paper-line);
     border-radius:var(--radius);
     background:transparent;
@@ -145,42 +121,43 @@
     outline:2px solid var(--focus);
     outline-offset:1px;
   }
-  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
 
   .hint{
-    font-size:0.78rem;
+    font-size:0.73rem;
     color:var(--ink-faint);
-    margin-top:-8px;
-    margin-bottom:14px;
+    margin-top:-1px;
+    margin-bottom:3px;
+    line-height:1.3;
   }
   .hint.warn{ color:var(--minus); }
 
-  hr.divider{ border:none; border-top:1px solid var(--paper-line); margin:22px 0; }
+  hr.divider{ border:none; border-top:1px solid var(--paper-line); margin:8px 0; }
 
   /* line items */
   .item-row{
     display:grid;
-    grid-template-columns: 30px 1fr 96px 32px;
-    gap:8px;
+    grid-template-columns: 26px 1fr 84px 26px;
+    gap:5px;
     align-items:center;
-    margin-bottom:10px;
+    margin-bottom:3px;
   }
   .sign-toggle{
-    width:30px; height:36px;
+    width:26px; height:29px;
     border:1px solid var(--paper-line);
     border-radius:var(--radius);
     background:transparent;
     color:var(--ink-soft);
     font-family:"IBM Plex Mono",monospace;
-    font-size:1rem;
+    font-size:0.95rem;
     cursor:pointer;
   }
   .sign-toggle[data-sign="-1"]{ color:var(--minus); border-color:var(--minus); }
   .sign-toggle[data-sign="1"]{ color:var(--due); border-color:var(--due); }
   .item-row input{
     font-family:"Inter",sans-serif;
-    font-size:0.95rem;
-    padding:8px 10px;
+    font-size:0.85rem;
+    padding:5px 8px;
     border:1px solid var(--paper-line);
     border-radius:var(--radius);
     background:transparent;
@@ -189,11 +166,11 @@
   }
   .item-row input:focus{ outline:2px solid var(--focus); outline-offset:1px; }
   .remove-row{
-    width:32px; height:36px;
+    width:26px; height:29px;
     border:1px solid transparent;
     background:transparent;
     color:var(--ink-faint);
-    font-size:1.1rem;
+    font-size:1rem;
     cursor:pointer;
     border-radius:var(--radius);
   }
@@ -201,14 +178,14 @@
 
   .add-item-btn{
     width:100%;
-    padding:10px;
-    margin-top:4px;
+    padding:6px;
+    margin-top:2px;
     border:1px dashed var(--paper-line);
     border-radius:var(--radius);
     background:transparent;
     color:var(--ink-soft);
     font-family:"Inter",sans-serif;
-    font-size:0.88rem;
+    font-size:0.82rem;
     cursor:pointer;
   }
   .add-item-btn:hover{ border-color:var(--ink-faint); color:var(--ink); }
@@ -217,35 +194,35 @@
   .receipt-shell{
     background:var(--card);
     border:1px solid var(--paper-line);
-    padding:26px 24px;
+    padding:18px 18px;
     position:relative;
   }
   .receipt-head{
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
-    margin-bottom:18px;
-    padding-bottom:16px;
+    margin-bottom:10px;
+    padding-bottom:10px;
     border-bottom:1px solid var(--paper-line);
   }
   .receipt-head h3{
     font-family:"Fraunces",Georgia,serif;
-    font-size:1.3rem;
+    font-size:1.15rem;
     font-weight:600;
-    margin:0 0 2px;
+    margin:0 0 1px;
   }
   .receipt-head .to{
-    font-size:0.85rem;
+    font-size:0.82rem;
     color:var(--ink-soft);
   }
   .receipt-head .stamp{
     font-family:"IBM Plex Mono",monospace;
-    font-size:0.65rem;
+    font-size:0.63rem;
     letter-spacing:0.08em;
     color:var(--gold);
     border:1px solid var(--gold);
     border-radius:100px;
-    padding:5px 10px;
+    padding:4px 9px;
     white-space:nowrap;
     transform:rotate(-2deg);
   }
@@ -254,8 +231,8 @@
     display:flex;
     justify-content:space-between;
     gap:14px;
-    font-size:0.95rem;
-    padding:7px 0;
+    font-size:0.92rem;
+    padding:4px 0;
     border-bottom:1px dotted var(--paper-line);
   }
   .line .label{ color:var(--ink-soft); }
@@ -268,28 +245,28 @@
 
   .elec-detail{
     font-family:"IBM Plex Mono",monospace;
-    font-size:0.78rem;
+    font-size:0.76rem;
     color:var(--ink-faint);
-    padding:4px 0 8px;
-    line-height:1.6;
+    padding:3px 0 5px;
+    line-height:1.5;
   }
 
   .total-line{
     display:flex;
     justify-content:space-between;
     align-items:baseline;
-    margin-top:14px;
-    padding-top:14px;
+    margin-top:8px;
+    padding-top:9px;
     border-top:2px solid var(--ink);
   }
   .total-line .label{
     font-family:"Fraunces",Georgia,serif;
-    font-size:1.02rem;
+    font-size:1rem;
     font-weight:600;
   }
   .total-line .value{
     font-family:"IBM Plex Mono",monospace;
-    font-size:1.35rem;
+    font-size:1.25rem;
     font-weight:600;
     color:var(--due);
     font-variant-numeric: tabular-nums;
@@ -298,15 +275,15 @@
   .actions{
     display:flex;
     align-items:center;
-    gap:10px;
-    margin-top:18px;
+    gap:8px;
+    margin-top:12px;
     flex-wrap:wrap;
   }
   button.primary, button.secondary{
     font-family:"Inter",sans-serif;
-    font-size:0.9rem;
+    font-size:0.87rem;
     font-weight:500;
-    padding:10px 18px;
+    padding:8px 15px;
     border-radius:var(--radius);
     cursor:pointer;
     transition:opacity 0.15s ease, transform 0.08s ease;
@@ -326,7 +303,7 @@
   button:disabled{ opacity:0.5; cursor:not-allowed; }
 
   .flag{
-    font-size:0.82rem;
+    font-size:0.8rem;
     color:var(--due);
     opacity:0;
     transition:opacity 0.2s ease;
@@ -335,12 +312,12 @@
   .flag.error{ color:var(--minus); }
 
   .reset-line{
-    margin-top:18px;
+    margin-top:10px;
     text-align:right;
   }
   .reset-line button{
     font-family:"Inter",sans-serif;
-    font-size:0.78rem;
+    font-size:0.76rem;
     color:var(--ink-faint);
     background:none;
     border:none;
@@ -352,10 +329,11 @@
   .reset-line button:hover{ color:var(--minus); }
 
   footer{
-    margin-top:26px;
-    font-size:0.78rem;
+    margin-top:16px;
+    font-size:0.76rem;
     color:var(--ink-faint);
     text-align:center;
+    line-height:1.4;
   }
 
   /* offscreen export target */
@@ -730,25 +708,25 @@
   function buildExportNode(){
     const d = buildData();
     const node = document.createElement('div');
-    node.style.background = '#FCFBF6';
-    node.style.color = '#20242E';
+    node.style.background = '#FFFFFF';
+    node.style.color = '#14161F';
     node.style.fontFamily = "'Inter', sans-serif";
     node.style.padding = '36px 34px';
-    node.style.border = '1px solid #DDD5C0';
+    node.style.border = '1px solid #C4B693';
 
     let html = '';
-    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #DDD5C0;padding-bottom:18px;margin-bottom:18px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #C4B693;padding-bottom:18px;margin-bottom:18px;">';
     html += '<div><div style="font-family:\'Fraunces\',serif;font-weight:600;font-size:1.5rem;margin-bottom:4px;">Rent — ' + escapeHtml(d.month) + '</div>';
-    if (d.tenant) html += '<div style="color:#6B7080;font-size:0.9rem;">Billed to ' + escapeHtml(d.tenant) + '</div>';
+    if (d.tenant) html += '<div style="color:#454B5E;font-size:0.9rem;">Billed to ' + escapeHtml(d.tenant) + '</div>';
     html += '</div>';
-    html += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:0.68rem;letter-spacing:0.08em;color:#9C7A28;border:1px solid #9C7A28;border-radius:100px;padding:5px 12px;">PAYABLE</div>';
+    html += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:0.68rem;letter-spacing:0.08em;color:#8A6510;border:1px solid #8A6510;border-radius:100px;padding:5px 12px;">PAYABLE</div>';
     html += '</div>';
 
     function row(label, amount, sign){
-      const color = sign === -1 ? '#AE3E3E' : '#20242E';
+      const color = sign === -1 ? '#B8222F' : '#14161F';
       const prefix = sign === -1 ? '−Rs ' : 'Rs ';
-      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dotted #DDD5C0;font-size:0.98rem;">' +
-        '<span style="color:#6B7080;">' + escapeHtml(label) + '</span>' +
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dotted #C4B693;font-size:0.98rem;">' +
+        '<span style="color:#454B5E;">' + escapeHtml(label) + '</span>' +
         '<span style="font-family:\'IBM Plex Mono\',monospace;color:' + color + ';">' + prefix + fmt(amount) + '/-</span></div>';
     }
 
@@ -757,14 +735,14 @@
     d.validItems.forEach(it => { html += row(it.label || '(item)', it.amount, it.sign); });
     html += row('Electricity', d.elec.total, 1);
     if (d.elec.hasReadings){
-      html += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:0.78rem;color:#9AA0AE;padding:6px 0 4px;line-height:1.6;">' +
+      html += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:0.78rem;color:#6E7488;padding:6px 0 4px;line-height:1.6;">' +
         fmt(d.elec.curr) + ' − ' + fmt(d.elec.prev) + ' = ' + fmt(d.elec.units) + ' units × Rs' + fmt(d.elec.rate) +
         ' = Rs' + fmt(d.elec.base) + ' + ' + fmt(d.elec.taxPct) + '% tax (Rs' + fmt(d.elec.taxAmt) + ')</div>';
     }
 
-    html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:16px;border-top:2px solid #20242E;">' +
+    html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:16px;border-top:2px solid #14161F;">' +
       '<span style="font-family:\'Fraunces\',serif;font-weight:600;font-size:1.05rem;">Total payable</span>' +
-      '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:1.5rem;font-weight:600;color:#2E6B52;">Rs ' + fmt(d.total) + '/-</span></div>';
+      '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:1.5rem;font-weight:600;color:#146B41;">Rs ' + fmt(d.total) + '/-</span></div>';
 
     node.innerHTML = html;
     return node;
@@ -784,7 +762,7 @@
       exportTarget.appendChild(node);
       // give web fonts a beat to apply inside the offscreen node
       await new Promise(r => setTimeout(r, 60));
-      const canvas = await html2canvas(node, { backgroundColor: '#FCFBF6', scale: 2 });
+      const canvas = await html2canvas(node, { backgroundColor: '#FFFFFF', scale: 2 });
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
       if (!blob) throw new Error('no blob');
       const d = buildData();
