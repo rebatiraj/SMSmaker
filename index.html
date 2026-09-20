@@ -467,7 +467,7 @@
         <button class="secondary" id="downloadBtn" type="button">Save / Share image (JPG)</button>
         <span class="flag" id="flag"></span>
       </div>
-      <div class="hint" id="shareHint">On the Claude iOS app this opens your share sheet — pick WhatsApp or Viber directly. On Android or desktop it saves to Downloads first, ready to attach.</div>
+      <div class="hint" id="shareHint">Saves a JPG you can attach directly in WhatsApp or Viber. Inside the Claude app this opens your share sheet; elsewhere it saves to Downloads first.</div>
     </div>
 
   </div>
@@ -695,6 +695,10 @@
   }
 
   // ---- Download as image ----
+  // On claude.ai, artifacts get a `downloads` capability via window.claude.
+  // Outside that viewer (e.g. hosted on your own site), window.claude does not
+  // exist, so we fall back to a standard browser download instead of disabling
+  // the button.
   let downloadsCap = null;
   (async function initCapability(){
     try{
@@ -702,11 +706,20 @@
         downloadsCap = await window.claude.use('downloads');
       }
     }catch(e){ downloadsCap = null; }
-    if (!downloadsCap){
-      downloadBtn.disabled = true;
-      downloadBtn.title = 'Image download is unavailable in this view';
-    }
+    // No `else disable` here on purpose: absence of window.claude just means
+    // we're running as a plain web page, where the browser fallback below works.
   })();
+
+  function browserDownload(blob, filename){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
 
   function buildExportNode(){
     const d = buildData();
@@ -752,10 +765,6 @@
   }
 
   downloadBtn.addEventListener('click', async function(){
-    if (!downloadsCap){
-      showFlag('Image download unavailable here', true);
-      return;
-    }
     if (typeof html2canvas !== 'function'){
       showFlag('Could not load image engine', true);
       return;
@@ -774,8 +783,14 @@
       if (!blob) throw new Error('no blob');
       const d = buildData();
       const filename = 'rent-' + d.month.toLowerCase() + (d.tenant ? '-' + d.tenant.toLowerCase().replace(/\s+/g,'-') : '') + '.jpg';
-      const result = await downloadsCap.save({ filename, data: blob });
-      showFlag(result.status === 'delivered' ? 'Sent ✓' : 'Saved ✓', false);
+
+      if (downloadsCap){
+        const result = await downloadsCap.save({ filename, data: blob });
+        showFlag(result.status === 'delivered' ? 'Sent ✓' : 'Saved ✓', false);
+      } else {
+        browserDownload(blob, filename);
+        showFlag('Saved ✓', false);
+      }
     }catch(err){
       if (err && err.code === 'declined'){
         // viewer said no; no error styling needed
