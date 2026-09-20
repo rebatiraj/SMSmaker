@@ -2,1107 +2,848 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ledgerline — Enterprise CRM Console</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rent Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
-    --bg:#F0F1FA;
-    --surface:#FFFFFF;
-    --surface-2:#F7F7FD;
-    --surface-3:#EEF0FA;
-    --border:#ECEDF6;
-    --border-strong:#DEE0F1;
-    --text:#181B36;
-    --text-muted:#9297B5;
-    --violet:#6F5CF6;
-    --violet-2:#9B8CFB;
-    --violet-soft:rgba(111,92,246,0.10);
-    --cyan:#2FB6E0;
-    --cyan-soft:rgba(47,182,224,0.12);
-    --pink:#F1487E;
-    --pink-2:#FF6FA0;
-    --pink-soft:rgba(241,72,126,0.12);
-    --amber:#FFA82E;
-    --amber-soft:rgba(255,168,46,0.14);
-    --green:#1FCB8F;
-    --green-soft:rgba(31,203,143,0.12);
-    --red:#FF5D6C;
-    --red-soft:rgba(255,93,108,0.12);
-    --orange:#FF9152;
-    --orange-soft:rgba(255,145,82,0.12);
-    --shadow: 0 20px 44px rgba(84,72,178,0.10);
-    --shadow-sm: 0 6px 16px rgba(84,72,178,0.08);
-    --radius: 22px;
-    --radius-sm: 14px;
-  }
-  html.dark{
-    --bg:#0D0F1F;
-    --surface:#16182E;
-    --surface-2:#1D2038;
-    --surface-3:#252846;
-    --border:rgba(255,255,255,0.08);
-    --border-strong:rgba(255,255,255,0.14);
-    --text:#F1F2FB;
-    --text-muted:#8B90AD;
-    --violet:#8B7CFF;
-    --violet-2:#B0A4FF;
-    --violet-soft:rgba(139,124,255,0.16);
-    --cyan:#33D6F0;
-    --cyan-soft:rgba(51,214,240,0.16);
-    --pink:#F866B0;
-    --pink-2:#FF93C4;
-    --pink-soft:rgba(248,102,176,0.16);
-    --amber:#FFB648;
-    --amber-soft:rgba(255,182,72,0.16);
-    --green:#3FE0A5;
-    --green-soft:rgba(63,224,165,0.16);
-    --red:#FF6B7A;
-    --red-soft:rgba(255,107,122,0.16);
-    --orange:#FF9E4A;
-    --orange-soft:rgba(255,158,74,0.16);
-    --shadow: 0 16px 36px rgba(0,0,0,0.45);
-    --shadow-sm: 0 8px 18px rgba(0,0,0,0.35);
+    --paper:#F1EDE1;
+    --paper-line:#DDD5C0;
+    --card:#FCFBF6;
+    --ink:#20242E;
+    --ink-soft:#6B7080;
+    --ink-faint:#9AA0AE;
+    --gold:#9C7A28;
+    --due:#2E6B52;
+    --minus:#AE3E3E;
+    --focus:#20242E;
+    --radius:3px;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#171A22;
+      --paper-line:#2A2E3A;
+      --card:#1E222C;
+      --ink:#E9E7DD;
+      --ink-soft:#9BA0AF;
+      --ink-faint:#666C7C;
+      --gold:#D2AC55;
+      --due:#7FCBA8;
+      --minus:#E38080;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#171A22;
+    --paper-line:#2A2E3A;
+    --card:#1E222C;
+    --ink:#E9E7DD;
+    --ink-soft:#9BA0AF;
+    --ink-faint:#666C7C;
+    --gold:#D2AC55;
+    --due:#7FCBA8;
+    --minus:#E38080;
+  }
+
   body{
-    margin:0; background:var(--bg);
-    color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;
-    transition:background-color .25s ease, color .25s ease;
-  }
-  .mono{font-family:'IBM Plex Mono',monospace;}
-  .display{font-family:'Plus Jakarta Sans',sans-serif;}
-  *:focus-visible{outline:2px solid var(--violet); outline-offset:2px;}
-
-  /* ---- Shell ---- */
-  .shell{display:grid; grid-template-columns:128px 1fr; min-height:100vh; gap:0;}
-  @media (max-width:900px){ .shell{grid-template-columns:1fr;} .sidebar{position:fixed; left:-120px; top:0; bottom:0; z-index:50; transition:left .25s ease;} .sidebar.open{left:0;} .scrim{display:none; position:fixed; inset:0; background:rgba(10,10,30,.45); z-index:40;} .scrim.show{display:block;} .hamburger{display:flex !important;} }
-
-  .sidebar{
-    padding:22px 12px; display:flex; flex-direction:column; align-items:center; gap:8px;
-  }
-  .brand{margin-bottom:10px;}
-  .brand-mark{
-    width:42px;height:42px;border-radius:14px;
-    background:linear-gradient(135deg,var(--violet),var(--pink-2));
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Plus Jakarta Sans';font-weight:800;color:#fff;font-size:17px;
-    box-shadow:0 10px 22px rgba(111,92,246,.35);
+    margin:0;
+    min-height:100%;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:40px 20px 56px;
   }
 
-  nav{display:flex; flex-direction:column; gap:6px; align-items:center; background:var(--surface); border-radius:26px; padding:14px 8px; box-shadow:var(--shadow-sm); border:1px solid var(--border);}
-  .nav-item{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
-    width:74px; padding:9px 4px; border-radius:16px;
-    color:var(--text-muted); font-size:9.5px; cursor:pointer; font-weight:600;
-    transition:.15s;
+  .wrap{ width:100%; max-width:1040px; }
+
+  header{
+    margin-bottom:28px;
   }
-  .nav-item svg{width:19px;height:19px; flex-shrink:0;}
-  .nav-item:hover{background:var(--surface-3); color:var(--text);}
-  .nav-item.active{background:linear-gradient(135deg,var(--violet),var(--violet-2)); color:#fff; box-shadow:0 10px 20px rgba(111,92,246,.35);}
-  .nav-item{position:relative;}
-  .nav-item .navdot{position:absolute; top:6px; right:14px; width:7px; height:7px; border-radius:50%; background:var(--pink); box-shadow:0 0 0 2px var(--surface);}
-  .nav-spacer{flex:1;}
-
-  .sidebar-foot{margin-top:auto; display:flex; flex-direction:column; align-items:center; gap:10px;}
-  .status-pill{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:8.5px; color:var(--green); font-weight:700;}
-  .status-pill .pulse{width:7px;height:7px;border-radius:50%;background:var(--green); animation:pulse 1.8s infinite;}
-  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(31,203,143,.55);} 70%{box-shadow:0 0 0 7px rgba(31,203,143,0);} 100%{box-shadow:0 0 0 0 rgba(31,203,143,0);} }
-
-  /* ---- Main ---- */
-  .main{display:flex; flex-direction:column; min-height:100vh;}
-  .topbar{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:22px 28px 10px; gap:16px;
+  .kicker{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    color:var(--gold);
+    margin-bottom:6px;
   }
-  .hamburger{display:none; width:38px;height:38px;border-radius:12px;background:var(--surface);border:1px solid var(--border); align-items:center; justify-content:center; cursor:pointer; color:var(--text); flex-shrink:0; box-shadow:var(--shadow-sm);}
-  .greeting-block h1{font-family:'Plus Jakarta Sans'; font-size:25px; font-weight:800; margin:0; letter-spacing:-.3px;}
-  .greeting-block p{margin:3px 0 0; color:var(--text-muted); font-size:13px;}
-  .search{
-    flex:1; max-width:340px; display:flex; align-items:center; gap:9px;
-    background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:11px 16px;
-    color:var(--text-muted); font-size:13px; box-shadow:var(--shadow-sm);
+  header h1{
+    font-family:"Fraunces",Georgia,"Times New Roman",serif;
+    font-weight:600;
+    font-size:2.1rem;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
   }
-  .search input{background:none;border:none;outline:none;color:var(--text);font-size:13px;width:100%;font-family:'Inter';}
-  .topbar-right{display:flex; align-items:center; gap:10px;}
-  .icon-btn{
-    width:40px;height:40px;border-radius:999px;background:var(--surface);border:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted); position:relative;
-    box-shadow:var(--shadow-sm);
+  header p{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:0.95rem;
+    max-width:52ch;
   }
-  .icon-btn:hover{color:var(--violet); border-color:var(--violet);}
-  .icon-btn .dotbadge{position:absolute; top:8px; right:9px; width:7px; height:7px; border-radius:50%; background:var(--pink); box-shadow:0 0 0 2px var(--surface);}
-  .avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink-2),var(--violet));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;font-family:'Plus Jakarta Sans';color:#fff; cursor:pointer; box-shadow:var(--shadow-sm);}
 
-  .dropdown{position:absolute; top:50px; right:0; width:300px; background:var(--surface); border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow); padding:8px; display:none; z-index:30;}
-  .dropdown.show{display:block;}
-  .dropdown-head{font-size:12px; font-weight:800; padding:8px 10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px;}
-  .dropdown-item{display:flex; gap:10px; padding:9px 10px; border-radius:12px; cursor:pointer;}
-  .dropdown-item:hover{background:var(--surface-3);}
-  .dd-dot{width:8px;height:8px;border-radius:50%; margin-top:5px; flex-shrink:0;}
-  .dd-text b{font-size:12.5px; display:block;} .dd-text span{font-size:11px; color:var(--text-muted);}
-
-  /* ticker */
-  .ticker-wrap{
-    margin:6px 28px 4px; border-radius:16px; background:var(--surface); border:1px solid var(--border); overflow:hidden; white-space:nowrap;
-    position:relative; height:38px; box-shadow:var(--shadow-sm);
+  .board{
+    display:grid;
+    grid-template-columns: minmax(320px,1fr) minmax(340px,1.05fr);
+    gap:24px;
+    align-items:start;
   }
-  .ticker-wrap::before, .ticker-wrap::after{ content:''; position:absolute; top:0; bottom:0; width:60px; z-index:2; }
-  .ticker-wrap::before{left:0; background:linear-gradient(90deg,var(--surface),transparent);}
-  .ticker-wrap::after{right:0; background:linear-gradient(270deg,var(--surface),transparent);}
-  .ticker{ display:inline-flex; align-items:center; gap:36px; padding-left:100%; animation:scroll 40s linear infinite; height:38px; }
-  .ticker-wrap:hover .ticker{ animation-play-state:paused; }
-  .ticker span{font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px;}
-  .ticker b.up{color:var(--green);} .ticker b.down{color:var(--red);}
-  .dot{width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block;}
-  @keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-100%);} }
-
-  .content{padding:16px 28px 28px; flex:1; max-width:1480px;}
-  .view{display:none;}
-  .view.active{display:block; animation:fade .35s ease;}
-  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
-
-  .page-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap:wrap; gap:10px;}
-  .page-title{font-family:'Plus Jakarta Sans'; font-size:22px; font-weight:800; margin:0; letter-spacing:-.3px;}
-  .page-desc{color:var(--text-muted); font-size:13px; margin-top:4px;}
-  .btn{
-    background:linear-gradient(135deg,var(--pink),var(--pink-2)); color:#fff; border:none; padding:12px 22px; border-radius:999px;
-    font-weight:700; font-size:13px; cursor:pointer; font-family:'Inter'; box-shadow:0 12px 24px rgba(241,72,126,.32);
-    transition:transform .12s ease;
+  @media (max-width:820px){
+    .board{grid-template-columns:1fr;}
   }
-  .btn:hover{transform:translateY(-1px);}
-  .btn:active{transform:translateY(0);}
-  .btn-ghost{ background:var(--surface); color:var(--text); border:1px solid var(--border); box-shadow:var(--shadow-sm);}
-  .btn-sm{padding:9px 15px; font-size:12px; border-radius:999px;}
 
-  /* KPI cards */
-  .kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px;}
-  .kpi-grid.cols-3{grid-template-columns:repeat(3,1fr);}
-  @media (max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
-  @media (max-width:560px){.kpi-grid{grid-template-columns:1fr;}}
   .card{
-    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    padding:20px 20px; box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:26px 26px 28px;
   }
-  .kpi-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
-  .kpi-icon{width:44px;height:44px;border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
-  .kpi.c-violet .kpi-icon{background:var(--violet-soft); color:var(--violet);}
-  .kpi.c-cyan .kpi-icon{background:var(--cyan-soft); color:var(--cyan);}
-  .kpi.c-pink .kpi-icon{background:var(--pink-soft); color:var(--pink);}
-  .kpi.c-amber .kpi-icon{background:var(--amber-soft); color:var(--amber);}
-  .kpi-icon svg{width:20px;height:20px;}
-  .kpi-badge{display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:800; padding:5px 10px 5px 8px; border-radius:999px; font-family:'IBM Plex Mono';}
-  .kpi-badge i{width:6px;height:6px;border-radius:50%; display:inline-block;}
-  .kpi-badge.up{color:var(--green); background:var(--green-soft);} .kpi-badge.up i{background:var(--green);}
-  .kpi-badge.down{color:var(--red); background:var(--red-soft);} .kpi-badge.down i{background:var(--red);}
-  .kpi-value{font-family:'Plus Jakarta Sans'; font-size:26px; font-weight:800; letter-spacing:-.4px;}
-  .kpi-label{font-size:12.5px; color:var(--text-muted); margin-top:5px; font-weight:500;}
 
-  /* purple gradient hero card variant */
-  .card.hero-purple{ background:linear-gradient(135deg,var(--violet) 0%, #9B7CF6 55%, var(--pink-2) 130%); color:#fff; border:none; }
-  .card.hero-purple .card-head h3{color:#fff;}
-  .card.hero-purple .card-head .sub{color:rgba(255,255,255,.75);}
-
-  .grid-2{display:grid; grid-template-columns:1.4fr 1fr; gap:16px; margin-bottom:16px;}
-  @media (max-width:980px){.grid-2{grid-template-columns:1fr;}}
-
-  .card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:10px;}
-  .card-head h3{font-family:'Plus Jakarta Sans'; font-size:15.5px; font-weight:800; margin:0;}
-  .card-head .sub{font-size:11.5px; color:var(--text-muted); font-weight:600;}
-
-  table{width:100%; border-collapse:collapse; font-size:13px;}
-  th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); padding:0 10px 12px; font-weight:700; cursor:pointer; user-select:none; white-space:nowrap;}
-  th:hover{color:var(--violet);}
-  th .arrow{opacity:.5; font-size:9px; margin-left:2px;}
-  td{padding:13px 10px; border-top:1px solid var(--border);}
-  tr:hover td{background:var(--surface-2);}
-
-  .badge{
-    display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border-radius:999px;
-    font-size:11px; font-weight:800; font-family:'IBM Plex Mono';
+  .section-title{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:0.7rem;
+    letter-spacing:0.1em;
+    color:var(--ink-faint);
+    margin:0 0 14px;
   }
-  .badge-green{background:var(--green-soft); color:var(--green);}
-  .badge-amber{background:var(--amber-soft); color:var(--amber);}
-  .badge-red{background:var(--red-soft); color:var(--red);}
-  .badge-cyan{background:var(--cyan-soft); color:var(--cyan);}
-  .badge-violet{background:var(--violet-soft); color:var(--violet);}
-  .tag{background:var(--surface-3); border:1px solid var(--border); font-size:10.5px; padding:3px 9px; border-radius:999px; color:var(--text-muted); margin-right:4px; display:inline-block; margin-bottom:2px; font-weight:600;}
-  .tag.vip{background:var(--amber-soft); color:var(--amber); border-color:transparent;}
-  .tag.risk{background:var(--red-soft); color:var(--red); border-color:transparent;}
-  .tag.inactive{background:var(--surface-3); color:var(--text-muted);}
+  .section-title.spaced{ margin-top:26px; }
 
-  .healthbar{width:60px; height:7px; border-radius:5px; background:var(--surface-3); overflow:hidden; display:inline-block; vertical-align:middle; margin-right:7px;}
-  .healthbar i{display:block; height:100%; border-radius:5px;}
-
-  .toggle{width:40px; height:22px; border-radius:999px; background:var(--surface-3); position:relative; cursor:pointer; border:1px solid var(--border); display:inline-block; transition:.2s; flex-shrink:0;}
-  .toggle i{position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:var(--text-muted); transition:.2s;}
-  .toggle.on{background:linear-gradient(135deg,var(--violet),var(--pink-2)); border-color:transparent;}
-  .toggle.on i{left:20px; background:#fff;}
-
-  /* Kanban */
-  .kanban{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; overflow-x:auto; padding-bottom:6px;}
-  @media (max-width:980px){.kanban{grid-template-columns:repeat(5,230px);}}
-  .kcol{background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:14px; min-width:0; min-height:120px; transition:.15s; box-shadow:var(--shadow-sm);}
-  .kcol.dragover{border-color:var(--violet); background:var(--violet-soft);}
-  .kcol-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
-  .kcol-head h4{font-size:12.5px; margin:0; font-family:'Plus Jakarta Sans'; font-weight:800; display:flex; align-items:center; gap:7px;}
-  .kcol-head h4 i{width:9px; height:9px; border-radius:50%; display:inline-block;}
-  .kcol-count{font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-muted); background:var(--surface-3); padding:2px 8px; border-radius:999px; font-weight:700;}
-  .kcol-sum{font-size:10.5px; color:var(--text-muted); font-family:'IBM Plex Mono'; margin-bottom:8px; font-weight:600;}
-  .deal{
-    background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:9px; cursor:grab;
-    transition:.12s;
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block;
+    font-size:0.83rem;
+    color:var(--ink-soft);
+    margin-bottom:6px;
   }
-  .deal:hover{border-color:var(--violet); transform:translateY(-1px); box-shadow:var(--shadow-sm);}
-  .deal.dragging{opacity:.4;}
-  .deal .co{font-weight:700; font-size:13px; margin-bottom:5px;}
-  .deal .amt{font-family:'IBM Plex Mono'; color:var(--violet); font-size:12.5px; font-weight:700;}
-  .deal .meta{font-size:11px; color:var(--text-muted); margin-top:8px; display:flex; justify-content:space-between; align-items:center;}
-  .owner-chip{width:21px;height:21px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--violet)); color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; font-family:'Plus Jakarta Sans';}
+  .field .optional{ color:var(--ink-faint); font-weight:400; }
+  .field input, .field select{
+    width:100%;
+    font-family:"Inter",sans-serif;
+    font-size:0.98rem;
+    padding:9px 11px;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    background:transparent;
+    color:var(--ink);
+  }
+  .field input::placeholder{ color:var(--ink-faint); }
+  .field input:focus, .field select:focus{
+    outline:2px solid var(--focus);
+    outline-offset:1px;
+  }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
-  .list-item{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1px solid var(--border); gap:10px;}
-  .list-item:first-child{border-top:none;}
+  .hint{
+    font-size:0.78rem;
+    color:var(--ink-faint);
+    margin-top:-8px;
+    margin-bottom:14px;
+  }
+  .hint.warn{ color:var(--minus); }
 
-  .search-bar{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
-  .filter-input{background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:10px 15px; font-size:13px; color:var(--text); font-family:'Inter'; outline:none; box-shadow:var(--shadow-sm);}
-  .filter-input:focus{border-color:var(--violet);}
+  hr.divider{ border:none; border-top:1px solid var(--paper-line); margin:22px 0; }
 
-  .empty-note{color:var(--text-muted); font-size:12.5px; padding:14px 0; text-align:center;}
+  /* line items */
+  .item-row{
+    display:grid;
+    grid-template-columns: 30px 1fr 96px 32px;
+    gap:8px;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .sign-toggle{
+    width:30px; height:36px;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:"IBM Plex Mono",monospace;
+    font-size:1rem;
+    cursor:pointer;
+  }
+  .sign-toggle[data-sign="-1"]{ color:var(--minus); border-color:var(--minus); }
+  .sign-toggle[data-sign="1"]{ color:var(--due); border-color:var(--due); }
+  .item-row input{
+    font-family:"Inter",sans-serif;
+    font-size:0.95rem;
+    padding:8px 10px;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    background:transparent;
+    color:var(--ink);
+    width:100%;
+  }
+  .item-row input:focus{ outline:2px solid var(--focus); outline-offset:1px; }
+  .remove-row{
+    width:32px; height:36px;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--ink-faint);
+    font-size:1.1rem;
+    cursor:pointer;
+    border-radius:var(--radius);
+  }
+  .remove-row:hover{ color:var(--minus); border-color:var(--paper-line); }
 
-  .modal-backdrop{position:fixed; inset:0; background:rgba(24,20,50,.45); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
-  .modal-backdrop.show{display:flex;}
-  .modal{background:var(--surface); border:1px solid var(--border); border-radius:24px; width:420px; max-width:100%; padding:24px; box-shadow:var(--shadow);}
-  .modal h3{font-family:'Plus Jakarta Sans'; margin:0 0 4px; font-size:18px; font-weight:800;}
-  .modal p.hint{color:var(--text-muted); font-size:12.5px; margin:0 0 16px;}
-  .field{margin-bottom:12px;}
-  .field label{font-size:11.5px; color:var(--text-muted); display:block; margin-bottom:5px; font-weight:700;}
-  .field input, .field select{width:100%; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:10px 13px; font-size:13px; color:var(--text); font-family:'Inter'; outline:none;}
-  .field input:focus, .field select:focus{border-color:var(--violet);}
-  .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:18px;}
+  .add-item-btn{
+    width:100%;
+    padding:10px;
+    margin-top:4px;
+    border:1px dashed var(--paper-line);
+    border-radius:var(--radius);
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:"Inter",sans-serif;
+    font-size:0.88rem;
+    cursor:pointer;
+  }
+  .add-item-btn:hover{ border-color:var(--ink-faint); color:var(--ink); }
 
-  .toast-wrap{position:fixed; bottom:20px; right:20px; z-index:200; display:flex; flex-direction:column; gap:8px;}
-  .toast{background:var(--surface); border:1px solid var(--border-strong); border-left:4px solid var(--green); padding:13px 18px; border-radius:14px; font-size:12.5px; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; animation:slidein .25s ease; min-width:230px; font-weight:600;}
-  @keyframes slidein{ from{transform:translateX(30px); opacity:0;} to{transform:translateX(0); opacity:1;} }
+  /* preview / receipt */
+  .receipt-shell{
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    padding:26px 24px;
+    position:relative;
+  }
+  .receipt-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:18px;
+    padding-bottom:16px;
+    border-bottom:1px solid var(--paper-line);
+  }
+  .receipt-head h3{
+    font-family:"Fraunces",Georgia,serif;
+    font-size:1.3rem;
+    font-weight:600;
+    margin:0 0 2px;
+  }
+  .receipt-head .to{
+    font-size:0.85rem;
+    color:var(--ink-soft);
+  }
+  .receipt-head .stamp{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:0.65rem;
+    letter-spacing:0.08em;
+    color:var(--gold);
+    border:1px solid var(--gold);
+    border-radius:100px;
+    padding:5px 10px;
+    white-space:nowrap;
+    transform:rotate(-2deg);
+  }
 
-  ::-webkit-scrollbar{height:8px; width:8px;}
-  ::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:4px;}
+  .line{
+    display:flex;
+    justify-content:space-between;
+    gap:14px;
+    font-size:0.95rem;
+    padding:7px 0;
+    border-bottom:1px dotted var(--paper-line);
+  }
+  .line .label{ color:var(--ink-soft); }
+  .line .value{
+    font-family:"IBM Plex Mono",monospace;
+    font-variant-numeric: tabular-nums;
+    white-space:nowrap;
+  }
+  .line .value.minus{ color:var(--minus); }
+
+  .elec-detail{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:0.78rem;
+    color:var(--ink-faint);
+    padding:4px 0 8px;
+    line-height:1.6;
+  }
+
+  .total-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:2px solid var(--ink);
+  }
+  .total-line .label{
+    font-family:"Fraunces",Georgia,serif;
+    font-size:1.02rem;
+    font-weight:600;
+  }
+  .total-line .value{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:1.35rem;
+    font-weight:600;
+    color:var(--due);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:18px;
+    flex-wrap:wrap;
+  }
+  button.primary, button.secondary{
+    font-family:"Inter",sans-serif;
+    font-size:0.9rem;
+    font-weight:500;
+    padding:10px 18px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    transition:opacity 0.15s ease, transform 0.08s ease;
+  }
+  button.primary{
+    border:1px solid var(--ink);
+    background:var(--ink);
+    color:var(--card);
+  }
+  button.secondary{
+    border:1px solid var(--paper-line);
+    background:transparent;
+    color:var(--ink);
+  }
+  button.primary:hover, button.secondary:hover{ opacity:0.85; }
+  button.primary:active, button.secondary:active{ transform:scale(0.97); }
+  button:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  .flag{
+    font-size:0.82rem;
+    color:var(--due);
+    opacity:0;
+    transition:opacity 0.2s ease;
+  }
+  .flag.show{ opacity:1; }
+  .flag.error{ color:var(--minus); }
+
+  .reset-line{
+    margin-top:18px;
+    text-align:right;
+  }
+  .reset-line button{
+    font-family:"Inter",sans-serif;
+    font-size:0.78rem;
+    color:var(--ink-faint);
+    background:none;
+    border:none;
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:3px;
+    padding:0;
+  }
+  .reset-line button:hover{ color:var(--minus); }
+
+  footer{
+    margin-top:26px;
+    font-size:0.78rem;
+    color:var(--ink-faint);
+    text-align:center;
+  }
+
+  /* offscreen export target */
+  #exportTarget{
+    position:fixed;
+    left:-9999px;
+    top:0;
+    width:520px;
+  }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="shell">
-  <div class="scrim" id="scrim"></div>
+  <header>
+    <div class="kicker">MONTHLY STATEMENT</div>
+    <h1>Rent Ledger</h1>
+    <p>Enter this month's charges once — get a formatted message ready to send, or a clean image to share.</p>
+  </header>
 
-  <aside class="sidebar" id="sidebar">
-    <div class="brand"><div class="brand-mark">L</div></div>
+  <div class="board">
 
-    <nav>
-      <div class="nav-item active" data-view="dashboard" title="Dashboard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-        Home
+    <!-- INPUT -->
+    <div class="card">
+      <div class="section-title">BILLING PERIOD</div>
+      <div class="row2">
+        <div class="field">
+          <label for="month">Month</label>
+          <select id="month">
+            <option>Baishakh</option>
+            <option>Jestha</option>
+            <option>Ashadh</option>
+            <option>Shrawan</option>
+            <option selected>Bhadra</option>
+            <option>Ashwin</option>
+            <option>Kartik</option>
+            <option>Mangsir</option>
+            <option>Poush</option>
+            <option>Magh</option>
+            <option>Falgun</option>
+            <option>Chaitra</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tenant">Tenant name <span class="optional">(optional)</span></label>
+          <input id="tenant" type="text" placeholder="e.g. Sita Rai">
+        </div>
       </div>
-      <div class="nav-item" data-view="customers" title="Customer 360">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="18" cy="9" r="2.4"/><path d="M15.5 20c.2-2.6 1.9-4.5 4.5-4.9"/></svg>
-        Clients
-      </div>
-      <div class="nav-item" data-view="subscriptions" title="Subscriptions">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
-        Subs
-      </div>
-      <div class="nav-item" data-view="billing" title="Billing & Ledger">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 6.5c0-2-2-3-5-3s-5 1.2-5 3 2 2.7 5 3 5 1.1 5 3.1-2 3-5 3-5-1-5-3"/></svg>
-        Billing
-      </div>
-      <div class="nav-item" data-view="churn" title="Churn & Retention">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l5-5 4 4 8-9M20 7v6M14 7h6"/></svg>
-        Churn
-        <span class="navdot"></span>
-      </div>
-      <div class="nav-item" data-view="pipeline" title="CRM Pipeline">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
-        Deals
-      </div>
-      <div class="nav-item" data-view="service" title="Service Desk">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 01-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 015.4-5.4l-2.6 2.6-2-2z"/></svg>
-        Service
-      </div>
-    </nav>
 
-    <div class="sidebar-foot">
-      <span class="status-pill"><span class="pulse"></span>LIVE</span>
+      <div class="section-title spaced">FIXED CHARGES</div>
+      <div class="row2">
+        <div class="field">
+          <label for="rent">Rent (Rs)</label>
+          <input id="rent" type="number" inputmode="decimal" value="17000">
+        </div>
+        <div class="field">
+          <label for="waste">Waste Mngmt (Rs)</label>
+          <input id="waste" type="number" inputmode="decimal" value="100">
+        </div>
+      </div>
+
+      <div class="section-title spaced">ADDITIONAL ITEMS</div>
+      <div id="itemsList"></div>
+      <button class="add-item-btn" id="addItemBtn" type="button">+ Add line item (Wifi, Advance, etc.)</button>
+
+      <div class="section-title spaced">ELECTRICITY METER</div>
+      <div class="row2">
+        <div class="field">
+          <label for="prevReading">Previous reading</label>
+          <input id="prevReading" type="number" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="currReading">Current reading</label>
+          <input id="currReading" type="number" inputmode="decimal">
+        </div>
+      </div>
+      <div class="hint" id="unitsHint">Units used: —</div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="rate">Rate per unit (Rs)</label>
+          <input id="rate" type="number" inputmode="decimal" step="0.01" value="125">
+        </div>
+        <div class="field">
+          <label for="tax">Tax on electricity (%)</label>
+          <input id="tax" type="number" inputmode="decimal" step="0.01" value="5">
+        </div>
+      </div>
+
+      <div class="reset-line">
+        <button id="resetBtn" type="button">Clear all fields</button>
+      </div>
     </div>
-  </aside>
 
-  <div class="main">
-    <div class="topbar">
-      <div class="hamburger" id="hamburger">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </div>
-      <div class="greeting-block">
-        <h1 id="greetingText">Good Morning, Alex</h1>
-        <p>Here's your weekly business update</p>
-      </div>
-      <div class="search">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input id="globalSearch" placeholder="Search here" />
-      </div>
-      <div class="topbar-right" style="position:relative;">
-        <div class="icon-btn" id="themeToggle" title="Toggle theme">
-          <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+    <!-- PREVIEW -->
+    <div class="card">
+      <div class="section-title">PREVIEW</div>
+      <div class="receipt-shell" id="receiptShell">
+        <div class="receipt-head">
+          <div>
+            <h3 id="rhMonth">Rent — Bhadra</h3>
+            <div class="to" id="rhTo"></div>
+          </div>
+          <div class="stamp">PAYABLE</div>
         </div>
-        <div class="icon-btn" id="bellBtn" title="Notifications">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
-          <span class="dotbadge"></span>
-          <div class="dropdown" id="bellDropdown"></div>
+        <div id="rhLines"></div>
+        <div class="total-line">
+          <div class="label">Total payable</div>
+          <div class="value" id="rhTotal">Rs 0/-</div>
         </div>
-        <div class="avatar" id="avatarBtn">A</div>
       </div>
+
+      <div class="actions">
+        <button class="primary" id="copyBtn" type="button">Copy message</button>
+        <button class="secondary" id="downloadBtn" type="button">Save / Share image (JPG)</button>
+        <span class="flag" id="flag"></span>
+      </div>
+      <div class="hint" id="shareHint">On the Claude iOS app this opens your share sheet — pick WhatsApp or Viber directly. On Android or desktop it saves to Downloads first, ready to attach.</div>
     </div>
 
-    <div class="ticker-wrap">
-      <div class="ticker" id="ticker"></div>
-    </div>
-
-    <div class="content">
-
-      <!-- DASHBOARD -->
-      <section class="view active" id="view-dashboard">
-        <div class="page-head">
-          <div></div>
-          <button class="btn" data-action="add-customer">+ New Customer</button>
-        </div>
-
-        <div class="kpi-grid" id="kpiGrid"></div>
-
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-head"><h3>Recurring Revenue Trend</h3><span class="sub mono">MRR, last 12 months</span></div>
-            <canvas id="revenueChart" height="150"></canvas>
-          </div>
-          <div class="card">
-            <div class="card-head"><h3>Sales Pipeline Funnel</h3><span class="sub mono">by stage</span></div>
-            <canvas id="funnelChart" height="150"></canvas>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-head"><h3>Expiring This Month</h3><span class="sub mono" id="expiringCount"></span></div>
-            <div id="expiringList"></div>
-          </div>
-          <div class="card hero-purple">
-            <div class="card-head"><h3>Top Products</h3><span class="sub mono">by revenue share</span></div>
-            <canvas id="productChart" height="170"></canvas>
-          </div>
-        </div>
-      </section>
-
-      <!-- CUSTOMERS -->
-      <section class="view" id="view-customers">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Customer 360</h1>
-            <div class="page-desc">Centralized profile, health score & engagement across your book of business</div>
-          </div>
-          <button class="btn" data-action="add-customer">+ Add Customer</button>
-        </div>
-        <div class="search-bar">
-          <input class="filter-input" id="custSearch" placeholder="Filter by name or contact…" style="flex:1; min-width:200px;">
-          <select class="filter-input" id="custIndustry"><option value="">All industries</option><option>Manufacturing</option><option>Retail</option><option>Healthcare</option><option>Finance</option></select>
-          <select class="filter-input" id="custSegment"><option value="">All segments</option><option value="VIP">VIP</option><option value="High-risk">High-risk</option><option value="Inactive">Inactive</option></select>
-        </div>
-        <div class="card" style="padding:8px 20px;">
-          <table>
-            <thead><tr>
-              <th data-sort="name">Company <span class="arrow"></span></th>
-              <th data-sort="industry">Industry <span class="arrow"></span></th>
-              <th>Tags</th>
-              <th data-sort="health">Health <span class="arrow"></span></th>
-              <th data-sort="mrr">MRR <span class="arrow"></span></th>
-              <th>Primary Contact</th>
-              <th data-sort="lastSort">Last Activity <span class="arrow"></span></th>
-            </tr></thead>
-            <tbody id="customersTable"></tbody>
-          </table>
-          <div class="empty-note" id="custEmpty" style="display:none;">No customers match your filters.</div>
-        </div>
-      </section>
-
-      <!-- SUBSCRIPTIONS -->
-      <section class="view" id="view-subscriptions">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Subscription Lifecycle</h1>
-            <div class="page-desc">Packages, renewals, grace periods and upgrade paths — click a toggle to flip auto-renew</div>
-          </div>
-          <button class="btn" data-action="add-sub">+ New Subscription</button>
-        </div>
-        <div class="card" style="padding:8px 20px;">
-          <table>
-            <thead><tr><th>Customer</th><th>Package</th><th>Start</th><th>Expiry</th><th>Auto-Renew</th><th>Status</th><th data-sort="mrr" data-tbl="subs">MRR <span class="arrow"></span></th></tr></thead>
-            <tbody id="subsTable"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- BILLING -->
-      <section class="view" id="view-billing">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Billing & Ledger</h1>
-            <div class="page-desc">Per-customer ledger with debit/credit entries and outstanding balances</div>
-          </div>
-          <button class="btn" data-action="add-ledger">+ New Entry</button>
-        </div>
-        <div class="kpi-grid cols-3">
-          <div class="card hero-purple"><div class="kpi-label" style="color:rgba(255,255,255,.8);">Outstanding Balance</div><div class="kpi-value" id="stat-outstanding" style="color:#fff;">$0</div><div class="kpi-badge up" style="background:rgba(255,255,255,.18); color:#fff;"><i style="background:#fff;"></i>6.2%</div></div>
-          <div class="card"><div class="kpi-label">Invoiced this Month</div><div class="kpi-value">$312,940</div><div class="kpi-badge up"><i></i>11.4%</div></div>
-          <div class="card"><div class="kpi-label">Auto-Reconciled</div><div class="kpi-value">94.2%</div><div class="kpi-badge up"><i></i>2.1pt</div></div>
-        </div>
-        <div class="card" style="padding:8px 20px;">
-          <table>
-            <thead><tr><th>Date</th><th>Customer</th><th>Description</th><th>Type</th><th>Amount</th><th>Balance</th></tr></thead>
-            <tbody id="ledgerTable"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- CHURN -->
-      <section class="view" id="view-churn">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Churn & Retention Intelligence</h1>
-            <div class="page-desc">Attrition trends, at-risk accounts and lifetime value</div>
-          </div>
-        </div>
-        <div class="kpi-grid">
-          <div class="card"><div class="kpi-label">Churn Rate</div><div class="kpi-value">3.4%</div><div class="kpi-badge down"><i></i>0.4pt</div></div>
-          <div class="card"><div class="kpi-label">Retention Rate</div><div class="kpi-value">96.6%</div><div class="kpi-badge up"><i></i>steady</div></div>
-          <div class="card hero-purple"><div class="kpi-label" style="color:rgba(255,255,255,.8);">Avg. LTV</div><div class="kpi-value" style="color:#fff;">$18.4k</div><div class="kpi-badge up" style="background:rgba(255,255,255,.18); color:#fff;"><i style="background:#fff;"></i>5.9%</div></div>
-          <div class="card"><div class="kpi-label">At-Risk Accounts</div><div class="kpi-value" id="stat-atrisk">0</div><div class="kpi-badge down"><i></i>flagged</div></div>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-head"><h3>Churn Rate Trend</h3><span class="sub mono">monthly, %</span></div>
-            <canvas id="churnChart" height="150"></canvas>
-          </div>
-          <div class="card">
-            <div class="card-head"><h3>At-Risk Accounts</h3><span class="sub mono">AI health score &lt; 40</span></div>
-            <div id="atRiskList"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PIPELINE -->
-      <section class="view" id="view-pipeline">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">CRM Sales Pipeline</h1>
-            <div class="page-desc">Drag deal cards between stages · Lead → Qualified → Proposal → Negotiation → Closed</div>
-          </div>
-          <button class="btn" data-action="add-deal">+ New Deal</button>
-        </div>
-        <div class="kanban" id="kanban"></div>
-      </section>
-
-      <!-- SERVICE -->
-      <section class="view" id="view-service">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Service & Maintenance Desk</h1>
-            <div class="page-desc">Ticket queue, AMC tracking and SLA compliance — change status inline</div>
-          </div>
-          <button class="btn" data-action="add-ticket">+ New Ticket</button>
-        </div>
-        <div class="card" style="padding:8px 20px;">
-          <table>
-            <thead><tr><th>Ticket</th><th>Customer</th><th>Issue Type</th><th>Engineer</th><th>SLA</th><th>Status</th><th>Resolution Time</th></tr></thead>
-            <tbody id="ticketsTable"></tbody>
-          </table>
-        </div>
-      </section>
-
-    </div>
   </div>
+
+  <footer>Rent, rate, tax and your line items are remembered on this device. Next month's "previous reading" fills in automatically from this month's current reading.</footer>
 </div>
 
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal" id="modal"></div>
-</div>
-<div class="toast-wrap" id="toastWrap"></div>
+<!-- Hidden, clean-styled node used only for image export -->
+<div id="exportTarget"></div>
 
 <script>
-/* ================= State ================= */
-let idSeq = 1000;
-const state = {
-  customers: [
-    {id:idSeq++, name:"Aarav Textiles", industry:"Manufacturing", tags:["VIP"], health:88, mrr:4200, contact:"Priya Nair", last:"2 days ago", lastSort:2},
-    {id:idSeq++, name:"Northgate Retail Co.", industry:"Retail", tags:["High-risk"], health:34, mrr:1800, contact:"Tom Ellery", last:"18 days ago", lastSort:18},
-    {id:idSeq++, name:"Himal Health Systems", industry:"Healthcare", tags:["VIP","New"], health:76, mrr:6100, contact:"Dr. S. Karki", last:"Today", lastSort:0},
-    {id:idSeq++, name:"Bluewave Finance", industry:"Finance", tags:[], health:61, mrr:3300, contact:"Meera Shah", last:"5 days ago", lastSort:5},
-    {id:idSeq++, name:"Orbit Logistics", industry:"Manufacturing", tags:["Inactive"], health:22, mrr:900, contact:"J. Fernandes", last:"41 days ago", lastSort:41},
-    {id:idSeq++, name:"Crestline Retail", industry:"Retail", tags:["VIP"], health:92, mrr:5400, contact:"Anjali Rao", last:"Yesterday", lastSort:1},
-    {id:idSeq++, name:"Summit Health Group", industry:"Healthcare", tags:[], health:57, mrr:2700, contact:"Dr. N. Thapa", last:"9 days ago", lastSort:9},
-  ],
-  subs: [
-    {id:idSeq++, cust:"Aarav Textiles", pkg:"Enterprise Yearly", start:"2025-03-01", expiry:"2026-03-01", renew:true, status:"Active", mrr:4200},
-    {id:idSeq++, cust:"Northgate Retail Co.", pkg:"Growth Monthly", start:"2025-11-10", expiry:"2026-08-10", renew:false, status:"Grace Period", mrr:1800},
-    {id:idSeq++, cust:"Himal Health Systems", pkg:"Enterprise Yearly", start:"2026-01-15", expiry:"2027-01-15", renew:true, status:"Active", mrr:6100},
-    {id:idSeq++, cust:"Bluewave Finance", pkg:"Growth Yearly", start:"2025-06-01", expiry:"2026-06-01", renew:true, status:"Active", mrr:3300},
-    {id:idSeq++, cust:"Orbit Logistics", pkg:"Starter Monthly", start:"2025-05-01", expiry:"2026-08-01", renew:false, status:"Expiring Soon", mrr:900},
-    {id:idSeq++, cust:"Crestline Retail", pkg:"Enterprise Yearly", start:"2025-09-01", expiry:"2026-09-01", renew:true, status:"Active", mrr:5400},
-  ],
-  ledger: [
-    {date:"Aug 03", cust:"Aarav Textiles", desc:"Invoice #INV-1042", type:"Debit", amount:4200, bal:4200},
-    {date:"Aug 02", cust:"Northgate Retail Co.", desc:"Payment received", type:"Credit", amount:-1800, bal:0},
-    {date:"Aug 01", cust:"Himal Health Systems", desc:"Invoice #INV-1041", type:"Debit", amount:6100, bal:6100},
-    {date:"Jul 30", cust:"Orbit Logistics", desc:"Overdue reminder fee", type:"Debit", amount:150, bal:1050},
-    {date:"Jul 28", cust:"Crestline Retail", desc:"Payment received", type:"Credit", amount:-5400, bal:0},
-  ],
-  atRisk: [
-    {name:"Orbit Logistics", score:22, reason:"No login in 40+ days"},
-    {name:"Northgate Retail Co.", score:34, reason:"Payment overdue 18 days"},
-    {name:"Summit Health Group", score:57, reason:"Support tickets ↑ 3x"},
-  ],
-  tickets: [
-    {id:"TKT-2291", cust:"Aarav Textiles", type:"Bug", eng:"R. Malla", sla:"On Track", status:"In Progress", res:"—"},
-    {id:"TKT-2290", cust:"Northgate Retail Co.", type:"Billing", eng:"S. Gurung", sla:"Breached", status:"Open", res:"—"},
-    {id:"TKT-2288", cust:"Himal Health Systems", type:"Feature Req.", eng:"A. Basnet", sla:"On Track", status:"Resolved", res:"6h 20m"},
-    {id:"TKT-2285", cust:"Bluewave Finance", type:"Integration", eng:"R. Malla", sla:"At Risk", status:"In Progress", res:"—"},
-  ],
-  pipeline: {
-    "Lead":[{id:idSeq++, co:"Delta Manufacturing", amt:12000, owner:"P. Nair", prob:"20%"},{id:idSeq++, co:"Coastal Retailers", amt:8500, owner:"T. Ellery", prob:"20%"}],
-    "Qualified":[{id:idSeq++, co:"Rivertown Health", amt:22000, owner:"M. Shah", prob:"40%"},{id:idSeq++, co:"Vantage Finance", amt:15300, owner:"A. Rao", prob:"40%"}],
-    "Proposal":[{id:idSeq++, co:"Everest Freight", amt:31000, owner:"S. Karki", prob:"60%"}],
-    "Negotiation":[{id:idSeq++, co:"Highland Retail Grp", amt:44000, owner:"J. Fernandes", prob:"75%"}],
-    "Closed":[{id:idSeq++, co:"Bluewave Finance", amt:3300, owner:"M. Shah", prob:"Won"}]
-  },
-  sort: { customers:{key:null, dir:1}, subs:{key:null, dir:1} },
-  filters: { custText:"", custIndustry:"", custSegment:"" }
-};
-const stageColors = {"Lead":"var(--cyan)","Qualified":"var(--violet)","Proposal":"var(--amber)","Negotiation":"var(--orange)","Closed":"var(--green)"};
+(function(){
+  const STORAGE_KEY = 'rent-ledger-v2';
 
-/* ================= Utilities ================= */
-function fmt(n){ return '$' + Math.abs(n).toLocaleString(); }
-function healthColor(h){ return h>=70?'var(--green)':h>=45?'var(--amber)':'var(--red)'; }
-function slaBadge(s){ return s==='On Track'?'badge-green':s==='At Risk'?'badge-amber':'badge-red'; }
-function statusBadge(s){ return s==='Active'?'badge-green':s==='Grace Period'?'badge-amber':s==='Resolved'?'badge-cyan':s==='Open'?'badge-red':'badge-amber'; }
-function tagClass(t){ return t==='VIP'?'vip':t==='High-risk'?'risk':t==='Inactive'?'inactive':''; }
+  const fieldIds = ['month','tenant','rent','waste','prevReading','currReading','rate','tax'];
+  const F = {};
+  fieldIds.forEach(id => F[id] = document.getElementById(id));
 
-function toast(msg, color){
-  color = color || 'var(--green)';
-  const el = document.createElement('div');
-  el.className = 'toast';
-  el.style.borderLeftColor = color;
-  el.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg><span>${msg}</span>`;
-  document.getElementById('toastWrap').appendChild(el);
-  setTimeout(()=>{ el.style.transition='.3s'; el.style.opacity='0'; el.style.transform='translateX(30px)'; setTimeout(()=>el.remove(),300); }, 3200);
-}
+  const itemsListEl = document.getElementById('itemsList');
+  const addItemBtn = document.getElementById('addItemBtn');
+  const unitsHint = document.getElementById('unitsHint');
+  const rhMonth = document.getElementById('rhMonth');
+  const rhTo = document.getElementById('rhTo');
+  const rhLines = document.getElementById('rhLines');
+  const rhTotal = document.getElementById('rhTotal');
+  const copyBtn = document.getElementById('copyBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const flag = document.getElementById('flag');
+  const resetBtn = document.getElementById('resetBtn');
+  const exportTarget = document.getElementById('exportTarget');
 
-/* ================= Modal system ================= */
-const backdrop = document.getElementById('modalBackdrop');
-const modalEl = document.getElementById('modal');
-function openModal(html){ modalEl.innerHTML = html; backdrop.classList.add('show'); }
-function closeModal(){ backdrop.classList.remove('show'); }
-backdrop.addEventListener('click', e => { if(e.target === backdrop) closeModal(); });
+  let items = []; // {id, label, amount, sign}
+  let itemSeq = 1;
 
-function modalAddCustomer(){
-  openModal(`
-    <h3>Add Customer</h3><p class="hint">Create a new 360° customer profile.</p>
-    <div class="field"><label>Company name</label><input id="f-name" placeholder="e.g. Zenith Robotics"></div>
-    <div class="field"><label>Industry</label><select id="f-industry"><option>Manufacturing</option><option>Retail</option><option>Healthcare</option><option>Finance</option></select></div>
-    <div class="field"><label>Primary contact</label><input id="f-contact" placeholder="e.g. Sam Lee"></div>
-    <div class="field"><label>Starting MRR ($)</label><input id="f-mrr" type="number" placeholder="2500"></div>
-    <div class="modal-actions"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" onclick="submitCustomer()">Add Customer</button></div>
-  `);
-}
-function submitCustomer(){
-  const name = document.getElementById('f-name').value.trim();
-  if(!name){ toast('Please enter a company name', 'var(--red)'); return; }
-  state.customers.unshift({
-    id:idSeq++, name, industry:document.getElementById('f-industry').value,
-    tags:["New"], health: 60 + Math.floor(Math.random()*30), mrr: Number(document.getElementById('f-mrr').value)||0,
-    contact:document.getElementById('f-contact').value.trim()||'—', last:'Today', lastSort:0
+  function fmt(n){
+    if (isNaN(n) || n === null) return '0';
+    const rounded = Math.round(n * 100) / 100;
+    return rounded.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+  }
+  function addItem(label, amount, sign){
+    items.push({ id: itemSeq++, label: label || '', amount: (amount === undefined ? '' : amount), sign: sign === -1 ? -1 : 1 });
+    renderItems();
+    render();
+  }
+
+  function renderItems(){
+    itemsListEl.innerHTML = '';
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.dataset.id = item.id;
+      row.innerHTML =
+        '<button type="button" class="sign-toggle" data-sign="' + item.sign + '" title="Toggle add / deduct">' + (item.sign === -1 ? '−' : '+') + '</button>' +
+        '<input type="text" class="item-label" placeholder="Label, e.g. Wifi" value="' + escapeAttr(item.label) + '">' +
+        '<input type="number" inputmode="decimal" class="item-amount" placeholder="0" value="' + escapeAttr(item.amount) + '">' +
+        '<button type="button" class="remove-row" title="Remove">×</button>';
+      itemsListEl.appendChild(row);
+    });
+  }
+
+  function escapeAttr(v){
+    return String(v === undefined || v === null ? '' : v).replace(/"/g,'&quot;');
+  }
+
+  itemsListEl.addEventListener('click', function(e){
+    const row = e.target.closest('.item-row');
+    if (!row) return;
+    const id = Number(row.dataset.id);
+    if (e.target.classList.contains('remove-row')){
+      items = items.filter(it => it.id !== id);
+      renderItems();
+      render();
+    } else if (e.target.classList.contains('sign-toggle')){
+      const item = items.find(it => it.id === id);
+      if (item){
+        item.sign = item.sign === 1 ? -1 : 1;
+        renderItems();
+        render();
+      }
+    }
   });
-  closeModal(); toast(`${name} added to Customer 360`);
-  renderCustomers(); renderKPIs();
-}
 
-function modalAddDeal(){
-  openModal(`
-    <h3>New Deal</h3><p class="hint">Adds a card to the Lead stage.</p>
-    <div class="field"><label>Company</label><input id="f-co" placeholder="e.g. Meridian Foods"></div>
-    <div class="field"><label>Deal value ($)</label><input id="f-amt" type="number" placeholder="18000"></div>
-    <div class="field"><label>Owner</label><input id="f-owner" placeholder="e.g. R. Malla"></div>
-    <div class="modal-actions"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" onclick="submitDeal()">Create Deal</button></div>
-  `);
-}
-function submitDeal(){
-  const co = document.getElementById('f-co').value.trim();
-  if(!co){ toast('Please enter a company name', 'var(--red)'); return; }
-  state.pipeline["Lead"].unshift({id:idSeq++, co, amt:Number(document.getElementById('f-amt').value)||0, owner:document.getElementById('f-owner').value.trim()||'Unassigned', prob:"20%"});
-  closeModal(); toast(`${co} added to Lead stage`, 'var(--violet)');
-  renderKanban();
-}
+  itemsListEl.addEventListener('input', function(e){
+    const row = e.target.closest('.item-row');
+    if (!row) return;
+    const id = Number(row.dataset.id);
+    const item = items.find(it => it.id === id);
+    if (!item) return;
+    if (e.target.classList.contains('item-label')) item.label = e.target.value;
+    if (e.target.classList.contains('item-amount')) item.amount = e.target.value;
+    render();
+    persist();
+  });
 
-function modalAddTicket(){
-  openModal(`
-    <h3>New Ticket</h3><p class="hint">Log a service or maintenance issue.</p>
-    <div class="field"><label>Customer</label><input id="f-tcust" placeholder="e.g. Aarav Textiles"></div>
-    <div class="field"><label>Issue type</label><select id="f-ttype"><option>Bug</option><option>Billing</option><option>Feature Req.</option><option>Integration</option></select></div>
-    <div class="field"><label>Assigned engineer</label><input id="f-teng" placeholder="e.g. A. Basnet"></div>
-    <div class="modal-actions"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" onclick="submitTicket()">Create Ticket</button></div>
-  `);
-}
-function submitTicket(){
-  const cust = document.getElementById('f-tcust').value.trim();
-  if(!cust){ toast('Please enter a customer', 'var(--red)'); return; }
-  const id = 'TKT-' + (2292 + state.tickets.length);
-  state.tickets.unshift({id, cust, type:document.getElementById('f-ttype').value, eng:document.getElementById('f-teng').value.trim()||'Unassigned', sla:'On Track', status:'Open', res:'—'});
-  closeModal(); toast(`${id} created`, 'var(--cyan)');
-  renderTickets();
-}
+  addItemBtn.addEventListener('click', function(){
+    addItem('', '', 1);
+    persist();
+  });
 
-function modalAddSub(){
-  openModal(`
-    <h3>New Subscription</h3><p class="hint">Attach a package to a customer.</p>
-    <div class="field"><label>Customer</label><input id="f-scust" placeholder="e.g. Crestline Retail"></div>
-    <div class="field"><label>Package</label><select id="f-spkg"><option>Starter Monthly</option><option>Growth Monthly</option><option>Growth Yearly</option><option>Enterprise Yearly</option></select></div>
-    <div class="field"><label>MRR ($)</label><input id="f-smrr" type="number" placeholder="1200"></div>
-    <div class="modal-actions"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" onclick="submitSub()">Create Subscription</button></div>
-  `);
-}
-function submitSub(){
-  const cust = document.getElementById('f-scust').value.trim();
-  if(!cust){ toast('Please enter a customer', 'var(--red)'); return; }
-  state.subs.unshift({id:idSeq++, cust, pkg:document.getElementById('f-spkg').value, start:'2026-08-04', expiry:'2027-08-04', renew:true, status:'Active', mrr:Number(document.getElementById('f-smrr').value)||0});
-  closeModal(); toast(`Subscription created for ${cust}`);
-  renderSubs();
-}
+  function computeElectricity(){
+    const prev = parseFloat(F.prevReading.value);
+    const curr = parseFloat(F.currReading.value);
+    const rate = parseFloat(F.rate.value) || 0;
+    const taxPct = parseFloat(F.tax.value) || 0;
+    const hasReadings = !isNaN(prev) && !isNaN(curr);
+    const units = hasReadings ? (curr - prev) : NaN;
+    const base = hasReadings ? units * rate : 0;
+    const taxAmt = hasReadings ? base * (taxPct / 100) : 0;
+    const total = hasReadings ? base + taxAmt : 0;
+    return { prev, curr, rate, taxPct, units, base, taxAmt, total, hasReadings };
+  }
 
-function modalAddLedger(){
-  openModal(`
-    <h3>New Ledger Entry</h3><p class="hint">Record a debit or credit.</p>
-    <div class="field"><label>Customer</label><input id="f-lcust" placeholder="e.g. Bluewave Finance"></div>
-    <div class="field"><label>Description</label><input id="f-ldesc" placeholder="e.g. Invoice #INV-1050"></div>
-    <div class="field"><label>Type</label><select id="f-ltype"><option>Debit</option><option>Credit</option></select></div>
-    <div class="field"><label>Amount ($)</label><input id="f-lamt" type="number" placeholder="2500"></div>
-    <div class="modal-actions"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-sm" onclick="submitLedger()">Add Entry</button></div>
-  `);
-}
-function submitLedger(){
-  const cust = document.getElementById('f-lcust').value.trim();
-  if(!cust){ toast('Please enter a customer', 'var(--red)'); return; }
-  const type = document.getElementById('f-ltype').value;
-  let amt = Number(document.getElementById('f-lamt').value)||0;
-  if(type==='Credit') amt = -amt;
-  const bal = Math.max(0, (state.ledger[0]?.bal||0) + amt);
-  state.ledger.unshift({date:'Aug 04', cust, desc:document.getElementById('f-ldesc').value.trim()||'Manual entry', type, amount:amt, bal});
-  closeModal(); toast('Ledger entry recorded');
-  renderLedger();
-}
+  function buildData(){
+    const month = F.month.value;
+    const tenant = F.tenant.value.trim();
+    const rent = parseFloat(F.rent.value) || 0;
+    const waste = parseFloat(F.waste.value) || 0;
+    const elec = computeElectricity();
+    const validItems = items
+      .map(it => ({ label: (it.label || '').trim(), amount: parseFloat(it.amount) || 0, sign: it.sign }))
+      .filter(it => it.label !== '' || it.amount !== 0);
+    const itemsTotal = validItems.reduce((sum, it) => sum + it.sign * it.amount, 0);
+    const total = rent + waste + itemsTotal + elec.total;
+    return { month, tenant, rent, waste, elec, validItems, total };
+  }
 
-document.body.addEventListener('click', e => {
-  const btn = e.target.closest('[data-action]');
-  if(!btn) return;
-  const a = btn.dataset.action;
-  if(a==='add-customer') modalAddCustomer();
-  if(a==='add-deal') modalAddDeal();
-  if(a==='add-ticket') modalAddTicket();
-  if(a==='add-sub') modalAddSub();
-  if(a==='add-ledger') modalAddLedger();
-});
+  function render(){
+    const d = buildData();
 
-/* ================= Theme ================= */
-const root = document.documentElement;
-document.getElementById('themeToggle').addEventListener('click', () => {
-  root.classList.toggle('dark');
-  updateChartTheme();
-});
+    // units hint
+    if (!d.elec.hasReadings){
+      unitsHint.textContent = 'Units used: —';
+      unitsHint.classList.remove('warn');
+    } else if (d.elec.units < 0){
+      unitsHint.textContent = 'Units used: ' + fmt(d.elec.units) + ' — current reading is lower than previous, please check';
+      unitsHint.classList.add('warn');
+    } else {
+      unitsHint.textContent = 'Units used: ' + fmt(d.elec.units);
+      unitsHint.classList.remove('warn');
+    }
 
-/* ================= Greeting ================= */
-(function setGreeting(){
-  const h = new Date().getHours();
-  const greeting = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
-  const el = document.getElementById('greetingText');
-  if(el) el.textContent = `${greeting}, Alex`;
+    // on-screen receipt
+    rhMonth.textContent = 'Rent — ' + d.month;
+    rhTo.textContent = d.tenant ? 'Billed to ' + d.tenant : '';
+
+    let linesHtml = '';
+    linesHtml += lineRow('Rent', d.rent, 1);
+    linesHtml += lineRow('Waste Mngmt', d.waste, 1);
+    d.validItems.forEach(it => {
+      linesHtml += lineRow(it.label || '(item)', it.amount, it.sign);
+    });
+    linesHtml += lineRow('Electricity', d.elec.total, 1);
+    if (d.elec.hasReadings){
+      linesHtml += '<div class="elec-detail">' +
+        fmt(d.elec.curr) + ' − ' + fmt(d.elec.prev) + ' = ' + fmt(d.elec.units) + ' units × Rs' + fmt(d.elec.rate) +
+        ' = Rs' + fmt(d.elec.base) + ' + ' + fmt(d.elec.taxPct) + '% tax (Rs' + fmt(d.elec.taxAmt) + ')' +
+        '</div>';
+    }
+    rhLines.innerHTML = linesHtml;
+    rhTotal.textContent = 'Rs ' + fmt(d.total) + '/-';
+
+    persist();
+  }
+
+  function lineRow(label, amount, sign){
+    const signedClass = sign === -1 ? ' minus' : '';
+    const prefix = sign === -1 ? '−Rs ' : 'Rs ';
+    return '<div class="line"><span class="label">' + escapeHtml(label) + '</span>' +
+      '<span class="value' + signedClass + '">' + prefix + fmt(amount) + '/-</span></div>';
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function buildMessage(){
+    const d = buildData();
+    const lines = [];
+    lines.push('Rent for ' + d.month + ' Month');
+    if (d.tenant) lines.push('(' + d.tenant + ')');
+    lines.push('Rent = ' + fmt(d.rent) + '/-');
+    lines.push('Waste Mngmt = ' + fmt(d.waste) + '/-');
+    d.validItems.forEach(it => {
+      lines.push((it.label || 'Item') + ' = ' + (it.sign === -1 ? '-' : '') + fmt(it.amount) + '/-');
+    });
+    if (d.elec.hasReadings){
+      lines.push('Electricity = ' + fmt(d.elec.curr) + '-' + fmt(d.elec.prev) + ' =' + fmt(d.elec.rate) + '*' + fmt(d.elec.units) +
+        ' +(' + fmt(d.elec.taxPct) + '% tax)= ' + fmt(d.elec.base) + '+' + fmt(d.elec.taxAmt) + '=' + fmt(d.elec.total));
+    } else {
+      lines.push('Electricity = ' + fmt(d.elec.total) + '/-');
+    }
+    lines.push('Total payable for ' + d.month + ' Month is =Rs ' + fmt(d.total) + '/-');
+    return lines.join('\n');
+  }
+
+  function showFlag(text, isError){
+    flag.textContent = text;
+    flag.classList.toggle('error', !!isError);
+    flag.classList.add('show');
+    setTimeout(() => flag.classList.remove('show'), 2200);
+  }
+
+  copyBtn.addEventListener('click', function(){
+    const msg = buildMessage();
+    const done = () => showFlag('Copied ✓', false);
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(msg).then(done).catch(() => fallbackCopy(msg, done));
+    } else {
+      fallbackCopy(msg, done);
+    }
+  });
+
+  function fallbackCopy(text, cb){
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      cb();
+    }catch(e){ showFlag('Copy not supported here', true); }
+  }
+
+  // ---- Download as image ----
+  let downloadsCap = null;
+  (async function initCapability(){
+    try{
+      if (window.claude && typeof window.claude.use === 'function'){
+        downloadsCap = await window.claude.use('downloads');
+      }
+    }catch(e){ downloadsCap = null; }
+    if (!downloadsCap){
+      downloadBtn.disabled = true;
+      downloadBtn.title = 'Image download is unavailable in this view';
+    }
+  })();
+
+  function buildExportNode(){
+    const d = buildData();
+    const node = document.createElement('div');
+    node.style.background = '#FCFBF6';
+    node.style.color = '#20242E';
+    node.style.fontFamily = "'Inter', sans-serif";
+    node.style.padding = '36px 34px';
+    node.style.border = '1px solid #DDD5C0';
+
+    let html = '';
+    html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #DDD5C0;padding-bottom:18px;margin-bottom:18px;">';
+    html += '<div><div style="font-family:\'Fraunces\',serif;font-weight:600;font-size:1.5rem;margin-bottom:4px;">Rent — ' + escapeHtml(d.month) + '</div>';
+    if (d.tenant) html += '<div style="color:#6B7080;font-size:0.9rem;">Billed to ' + escapeHtml(d.tenant) + '</div>';
+    html += '</div>';
+    html += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:0.68rem;letter-spacing:0.08em;color:#9C7A28;border:1px solid #9C7A28;border-radius:100px;padding:5px 12px;">PAYABLE</div>';
+    html += '</div>';
+
+    function row(label, amount, sign){
+      const color = sign === -1 ? '#AE3E3E' : '#20242E';
+      const prefix = sign === -1 ? '−Rs ' : 'Rs ';
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dotted #DDD5C0;font-size:0.98rem;">' +
+        '<span style="color:#6B7080;">' + escapeHtml(label) + '</span>' +
+        '<span style="font-family:\'IBM Plex Mono\',monospace;color:' + color + ';">' + prefix + fmt(amount) + '/-</span></div>';
+    }
+
+    html += row('Rent', d.rent, 1);
+    html += row('Waste Mngmt', d.waste, 1);
+    d.validItems.forEach(it => { html += row(it.label || '(item)', it.amount, it.sign); });
+    html += row('Electricity', d.elec.total, 1);
+    if (d.elec.hasReadings){
+      html += '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:0.78rem;color:#9AA0AE;padding:6px 0 4px;line-height:1.6;">' +
+        fmt(d.elec.curr) + ' − ' + fmt(d.elec.prev) + ' = ' + fmt(d.elec.units) + ' units × Rs' + fmt(d.elec.rate) +
+        ' = Rs' + fmt(d.elec.base) + ' + ' + fmt(d.elec.taxPct) + '% tax (Rs' + fmt(d.elec.taxAmt) + ')</div>';
+    }
+
+    html += '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:16px;border-top:2px solid #20242E;">' +
+      '<span style="font-family:\'Fraunces\',serif;font-weight:600;font-size:1.05rem;">Total payable</span>' +
+      '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:1.5rem;font-weight:600;color:#2E6B52;">Rs ' + fmt(d.total) + '/-</span></div>';
+
+    node.innerHTML = html;
+    return node;
+  }
+
+  downloadBtn.addEventListener('click', async function(){
+    if (!downloadsCap){
+      showFlag('Image download unavailable here', true);
+      return;
+    }
+    if (typeof html2canvas !== 'function'){
+      showFlag('Could not load image engine', true);
+      return;
+    }
+    downloadBtn.disabled = true;
+    const prevLabel = downloadBtn.textContent;
+    downloadBtn.textContent = 'Rendering…';
+    try{
+      const node = buildExportNode();
+      exportTarget.innerHTML = '';
+      exportTarget.appendChild(node);
+      // give web fonts a beat to apply inside the offscreen node
+      await new Promise(r => setTimeout(r, 60));
+      const canvas = await html2canvas(node, { backgroundColor: '#FCFBF6', scale: 2 });
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+      if (!blob) throw new Error('no blob');
+      const d = buildData();
+      const filename = 'rent-' + d.month.toLowerCase() + (d.tenant ? '-' + d.tenant.toLowerCase().replace(/\s+/g,'-') : '') + '.jpg';
+      const result = await downloadsCap.save({ filename, data: blob });
+      showFlag(result.status === 'delivered' ? 'Sent ✓' : 'Saved ✓', false);
+    }catch(err){
+      if (err && err.code === 'declined'){
+        // viewer said no; no error styling needed
+      } else {
+        showFlag('Could not create image', true);
+      }
+    }finally{
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = prevLabel;
+    }
+  });
+
+  // ---- persistence ----
+  function persist(){
+    try{
+      const data = {
+        rent: F.rent.value,
+        waste: F.waste.value,
+        rate: F.rate.value,
+        tax: F.tax.value,
+        tenant: F.tenant.value,
+        lastCurrentReading: F.currReading.value,
+        items: items.map(it => ({ label: it.label, amount: it.amount, sign: it.sign }))
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }catch(e){ /* storage unavailable, ignore */ }
+  }
+
+  function load(){
+    let data = null;
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) data = JSON.parse(raw);
+    }catch(e){ data = null; }
+
+    if (data){
+      if (data.rent) F.rent.value = data.rent;
+      if (data.waste) F.waste.value = data.waste;
+      if (data.rate) F.rate.value = data.rate;
+      if (data.tax) F.tax.value = data.tax;
+      if (data.tenant) F.tenant.value = data.tenant;
+      // carry last month's current reading forward as this month's previous reading
+      if (data.lastCurrentReading) F.prevReading.value = data.lastCurrentReading;
+      if (Array.isArray(data.items)){
+        data.items.forEach(it => addItem(it.label, it.amount, it.sign));
+      }
+    }
+  }
+
+  fieldIds.forEach(id => F[id].addEventListener('input', render));
+
+  resetBtn.addEventListener('click', function(){
+    F.tenant.value = '';
+    F.rent.value = '';
+    F.waste.value = '';
+    F.prevReading.value = '';
+    F.currReading.value = '';
+    F.rate.value = '';
+    F.tax.value = '';
+    items = [];
+    renderItems();
+    render();
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  });
+
+  load();
+  render();
 })();
-
-/* ================= Mobile nav ================= */
-const sidebar = document.getElementById('sidebar');
-const scrim = document.getElementById('scrim');
-document.getElementById('hamburger').addEventListener('click', () => { sidebar.classList.add('open'); scrim.classList.add('show'); });
-scrim.addEventListener('click', () => { sidebar.classList.remove('open'); scrim.classList.remove('show'); });
-
-/* ================= Navigation ================= */
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    item.classList.add('active');
-    document.getElementById('view-' + item.dataset.view).classList.add('active');
-    sidebar.classList.remove('open'); scrim.classList.remove('show');
-  });
-});
-
-/* ================= Notifications dropdown ================= */
-const bellBtn = document.getElementById('bellBtn');
-const bellDropdown = document.getElementById('bellDropdown');
-const notifications = [
-  {c:'var(--red)', t:'SLA breached', s:'TKT-2290 · Northgate Retail Co.'},
-  {c:'var(--amber)', t:'Subscription entering grace period', s:'Northgate Retail Co.'},
-  {c:'var(--green)', t:'Payment received', s:'Crestline Retail · $5,400'},
-  {c:'var(--violet)', t:'Deal moved to Proposal', s:'Everest Freight · $31,000'},
-];
-bellDropdown.innerHTML = '<div class="dropdown-head">Notifications</div>' + notifications.map(n=>`
-  <div class="dropdown-item"><span class="dd-dot" style="background:${n.c}"></span><div class="dd-text"><b>${n.t}</b><span>${n.s}</span></div></div>
-`).join('');
-bellBtn.addEventListener('click', e => { e.stopPropagation(); bellDropdown.classList.toggle('show'); });
-document.addEventListener('click', () => bellDropdown.classList.remove('show'));
-
-/* ================= Render: KPIs ================= */
-function renderKPIs(){
-  const kpis = [
-    {label:"Total Customers", value: state.customers.length, pct:"+18%", dir:"up", cls:"c-violet",
-      icon:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/>'},
-    {label:"Active Subscriptions", value: state.subs.filter(s=>s.status==='Active').length, pct:"+4%", dir:"up", cls:"c-cyan",
-      icon:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>'},
-    {label:"Monthly Recurring Revenue", value: '$' + Math.round(state.subs.reduce((a,s)=>a+s.mrr,0)/1000*10)/10 + 'k', pct:"+8%", dir:"up", cls:"c-pink",
-      icon:'<path d="M12 2v20M17 6.5c0-2-2-3-5-3s-5 1.2-5 3 2 2.7 5 3 5 1.1 5 3.1-2 3-5 3-5-1-5-3"/>'},
-    {label:"Churn Rate", value:"3.4%", pct:"+0.4pt", dir:"down", cls:"c-amber",
-      icon:'<path d="M3 17l5-5 4 4 8-9M20 7v6M14 7h6"/>'},
-  ];
-  document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
-    <div class="card kpi ${k.cls}">
-      <div class="kpi-top">
-        <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${k.icon}</svg></div>
-        <div class="kpi-badge ${k.dir}"><i></i>${k.pct}</div>
-      </div>
-      <div class="kpi-value">${k.value}</div>
-      <div class="kpi-label">${k.label}</div>
-    </div>
-  `).join('');
-  document.getElementById('stat-outstanding').textContent = fmt(state.ledger[0]?.bal || 0);
-  document.getElementById('stat-atrisk').textContent = state.atRisk.length;
-}
-
-/* ================= Render: expiring list ================= */
-function renderExpiring(){
-  const list = state.subs.slice(0,5);
-  document.getElementById('expiringCount').textContent = list.length + ' subscriptions';
-  document.getElementById('expiringList').innerHTML = list.map(s => `
-    <div class="list-item">
-      <div>
-        <div style="font-weight:700; font-size:13px;">${s.cust}</div>
-        <div style="font-size:11.5px; color:var(--text-muted);">${s.pkg}</div>
-      </div>
-      <span class="badge ${statusBadge(s.status)}">${s.status}</span>
-    </div>
-  `).join('');
-}
-
-/* ================= Render: customers ================= */
-function applyCustomerFilters(list){
-  const {custText, custIndustry, custSegment} = state.filters;
-  return list.filter(c => {
-    if(custText && !(c.name.toLowerCase().includes(custText) || c.contact.toLowerCase().includes(custText))) return false;
-    if(custIndustry && c.industry !== custIndustry) return false;
-    if(custSegment && !c.tags.includes(custSegment)) return false;
-    return true;
-  });
-}
-function renderCustomers(){
-  let list = applyCustomerFilters(state.customers);
-  const {key, dir} = state.sort.customers;
-  if(key){ list = [...list].sort((a,b)=> (a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0) * dir); }
-  document.getElementById('custEmpty').style.display = list.length ? 'none' : 'block';
-  document.getElementById('customersTable').innerHTML = list.map(c => `
-    <tr>
-      <td style="font-weight:700;">${c.name}</td>
-      <td>${c.industry}</td>
-      <td>${c.tags.map(t=>`<span class="tag ${tagClass(t)}">${t}</span>`).join('') || '<span class="empty-note" style="padding:0;">—</span>'}</td>
-      <td><span class="healthbar"><i style="width:${c.health}%; background:${healthColor(c.health)}"></i></span><span class="mono" style="font-size:11.5px;">${c.health}</span></td>
-      <td class="mono">$${c.mrr.toLocaleString()}</td>
-      <td>${c.contact}</td>
-      <td style="color:var(--text-muted); font-size:12.5px;">${c.last}</td>
-    </tr>
-  `).join('');
-}
-document.getElementById('custSearch').addEventListener('input', e => { state.filters.custText = e.target.value.toLowerCase(); renderCustomers(); });
-document.getElementById('custIndustry').addEventListener('change', e => { state.filters.custIndustry = e.target.value; renderCustomers(); });
-document.getElementById('custSegment').addEventListener('change', e => { state.filters.custSegment = e.target.value; renderCustomers(); });
-document.getElementById('globalSearch').addEventListener('input', e => {
-  state.filters.custText = e.target.value.toLowerCase();
-  document.getElementById('custSearch').value = e.target.value;
-  renderCustomers();
-  if(e.target.value.trim()){
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelector('.nav-item[data-view="customers"]').classList.add('active');
-    document.getElementById('view-customers').classList.add('active');
-  }
-});
-document.querySelectorAll('#view-customers th[data-sort]').forEach(th => {
-  th.addEventListener('click', () => {
-    const key = th.dataset.sort;
-    const s = state.sort.customers;
-    s.dir = (s.key === key) ? -s.dir : 1;
-    s.key = key;
-    document.querySelectorAll('#view-customers th .arrow').forEach(a=>a.textContent='');
-    th.querySelector('.arrow').textContent = s.dir===1 ? '▲' : '▼';
-    renderCustomers();
-  });
-});
-
-/* ================= Render: subscriptions ================= */
-function renderSubs(){
-  let list = state.subs;
-  const {key, dir} = state.sort.subs;
-  if(key){ list = [...list].sort((a,b)=> (a[key] > b[key] ? 1 : a[key] < b[key] ? -1 : 0) * dir); }
-  document.getElementById('subsTable').innerHTML = list.map(s => `
-    <tr>
-      <td style="font-weight:700;">${s.cust}</td>
-      <td>${s.pkg}</td>
-      <td class="mono" style="font-size:12px;">${s.start}</td>
-      <td class="mono" style="font-size:12px;">${s.expiry}</td>
-      <td><span class="toggle ${s.renew?'on':''}" data-id="${s.id}"><i></i></span></td>
-      <td><span class="badge ${statusBadge(s.status)}">${s.status}</span></td>
-      <td class="mono">$${s.mrr.toLocaleString()}</td>
-    </tr>
-  `).join('');
-  document.querySelectorAll('#subsTable .toggle').forEach(t => {
-    t.addEventListener('click', () => {
-      const sub = state.subs.find(s => s.id == t.dataset.id);
-      sub.renew = !sub.renew;
-      toast(`Auto-renew ${sub.renew?'enabled':'disabled'} for ${sub.cust}`, sub.renew?'var(--green)':'var(--red)');
-      renderSubs();
-    });
-  });
-}
-document.querySelector('#view-subscriptions th[data-sort]').addEventListener('click', function(){
-  const s = state.sort.subs;
-  s.dir = (s.key === 'mrr') ? -s.dir : 1;
-  s.key = 'mrr';
-  this.querySelector('.arrow').textContent = s.dir===1 ? '▲' : '▼';
-  renderSubs();
-});
-
-/* ================= Render: ledger ================= */
-function renderLedger(){
-  document.getElementById('ledgerTable').innerHTML = state.ledger.map(l => `
-    <tr>
-      <td class="mono" style="font-size:12px;">${l.date}</td>
-      <td style="font-weight:700;">${l.cust}</td>
-      <td style="color:var(--text-muted);">${l.desc}</td>
-      <td><span class="badge ${l.type==='Debit'?'badge-red':'badge-green'}">${l.type}</span></td>
-      <td class="mono">${l.amount<0?'-':''}${fmt(l.amount)}</td>
-      <td class="mono">${fmt(l.bal)}</td>
-    </tr>
-  `).join('');
-  const el = document.getElementById('stat-outstanding');
-  if(el) el.textContent = fmt(state.ledger[0]?.bal || 0);
-}
-
-/* ================= Render: at risk ================= */
-function renderAtRisk(){
-  document.getElementById('atRiskList').innerHTML = state.atRisk.map(a => `
-    <div class="list-item">
-      <div>
-        <div style="font-weight:700; font-size:13px;">${a.name}</div>
-        <div style="font-size:11.5px; color:var(--text-muted);">${a.reason}</div>
-      </div>
-      <span class="badge badge-red">${a.score}</span>
-    </div>
-  `).join('');
-}
-
-/* ================= Render: tickets ================= */
-const statusOptions = ["Open","In Progress","Resolved"];
-function renderTickets(){
-  document.getElementById('ticketsTable').innerHTML = state.tickets.map((t,i) => `
-    <tr>
-      <td class="mono" style="font-size:12px;">${t.id}</td>
-      <td style="font-weight:700;">${t.cust}</td>
-      <td>${t.type}</td>
-      <td>${t.eng}</td>
-      <td><span class="badge ${slaBadge(t.sla)}">${t.sla}</span></td>
-      <td>
-        <select class="filter-input" style="padding:5px 8px; font-size:12px;" data-idx="${i}">
-          ${statusOptions.map(o=>`<option ${o===t.status?'selected':''}>${o}</option>`).join('')}
-        </select>
-      </td>
-      <td class="mono" style="font-size:12px;">${t.res}</td>
-    </tr>
-  `).join('');
-  document.querySelectorAll('#ticketsTable select').forEach(sel => {
-    sel.addEventListener('change', () => {
-      const t = state.tickets[Number(sel.dataset.idx)];
-      t.status = sel.value;
-      if(t.status === 'Resolved'){ t.res = (Math.floor(Math.random()*8)+1)+'h '+(Math.floor(Math.random()*59))+'m'; t.sla='On Track'; }
-      toast(`${t.id} marked ${t.status}`, 'var(--cyan)');
-      renderTickets();
-    });
-  });
-}
-
-/* ================= Render: kanban (drag & drop) ================= */
-let dragCtx = null;
-function renderKanban(){
-  const kb = document.getElementById('kanban');
-  kb.innerHTML = Object.entries(state.pipeline).map(([stage, deals]) => {
-    const sum = deals.reduce((a,d)=> a + (Number(d.amt)||0), 0);
-    return `
-    <div class="kcol" data-stage="${stage}">
-      <div class="kcol-head"><h4><i style="background:${stageColors[stage]}"></i>${stage}</h4><span class="kcol-count mono">${deals.length}</span></div>
-      <div class="kcol-sum">$${sum.toLocaleString()} total</div>
-      <div class="kcol-body">
-      ${deals.map(d => `
-        <div class="deal" draggable="true" data-id="${d.id}" data-stage="${stage}">
-          <div class="co">${d.co}</div>
-          <div class="amt">${typeof d.amt === 'number' ? '$'+d.amt.toLocaleString() : d.amt}</div>
-          <div class="meta"><span class="owner-chip">${(d.owner||'?').split(' ').map(w=>w[0]).join('').slice(0,2)}</span><span>${d.prob}</span></div>
-        </div>
-      `).join('')}
-      </div>
-    </div>`;
-  }).join('');
-
-  kb.querySelectorAll('.deal').forEach(card => {
-    card.addEventListener('dragstart', e => {
-      dragCtx = { id: card.dataset.id, from: card.dataset.stage };
-      card.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    card.addEventListener('dragend', () => card.classList.remove('dragging'));
-  });
-  kb.querySelectorAll('.kcol').forEach(col => {
-    col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('dragover'); });
-    col.addEventListener('dragleave', () => col.classList.remove('dragover'));
-    col.addEventListener('drop', e => {
-      e.preventDefault();
-      col.classList.remove('dragover');
-      if(!dragCtx) return;
-      const toStage = col.dataset.stage;
-      if(toStage === dragCtx.from){ dragCtx = null; return; }
-      const fromArr = state.pipeline[dragCtx.from];
-      const idx = fromArr.findIndex(d => String(d.id) === String(dragCtx.id));
-      if(idx === -1) return;
-      const [deal] = fromArr.splice(idx,1);
-      state.pipeline[toStage].unshift(deal);
-      toast(`${deal.co} moved to ${toStage}`, getCSS(stageColors[toStage].slice(4,-1)));
-      dragCtx = null;
-      renderKanban();
-      updateFunnelChart();
-    });
-  });
-}
-
-/* ================= Ticker ================= */
-const tickerEvents = [
-  {t:"INV-1042 paid by Aarav Textiles", v:"+$4,200", dir:"up"},
-  {t:"Northgate Retail Co. entered grace period", v:"", dir:"down"},
-  {t:"New deal: Everest Freight moved to Proposal", v:"$31,000", dir:"up"},
-  {t:"SLA breach on TKT-2290", v:"", dir:"down"},
-  {t:"Himal Health Systems renewed", v:"+$6,100 MRR", dir:"up"},
-  {t:"Churn risk flagged: Orbit Logistics", v:"score 22", dir:"down"},
-];
-document.getElementById('ticker').innerHTML = [...tickerEvents, ...tickerEvents].map(e => `
-  <span><span class="dot ${e.dir}"></span>${e.t} ${e.v ? `<b class="${e.dir}">${e.v}</b>` : ''}</span>
-`).join('');
-
-/* ================= Charts ================= */
-function getCSS(v){ return getComputedStyle(root).getPropertyValue(v).trim(); }
-let revenueChart, funnelChart, productChart, churnChart;
-
-function buildCharts(){
-  const textMuted = getCSS('--text-muted');
-  const border = getCSS('--border');
-  Chart.defaults.font.family = "'IBM Plex Mono', monospace";
-  Chart.defaults.font.size = 11;
-  Chart.defaults.color = textMuted;
-
-  const months = ["Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug"];
-  const mrr = [198,204,211,219,228,233,241,251,259,267,275,284.6];
-
-  const revCtx = document.getElementById('revenueChart').getContext('2d');
-  const revGrad = revCtx.createLinearGradient(0,0,0,220);
-  revGrad.addColorStop(0, hexToRgba(getCSS('--violet'), .38));
-  revGrad.addColorStop(1, hexToRgba(getCSS('--violet'), 0));
-
-  revenueChart = new Chart(revCtx, {
-    type:'line',
-    data:{ labels: months, datasets:[{
-      data: mrr, borderColor: getCSS('--violet'), backgroundColor: revGrad,
-      fill:true, tension:.4, pointRadius:0, borderWidth:3
-    }]},
-    options:{ plugins:{legend:{display:false}}, scales:{
-      x:{grid:{color:border}}, y:{grid:{color:border}, ticks:{callback:v=>'$'+v+'k'}}
-    }}
-  });
-
-  funnelChart = new Chart(document.getElementById('funnelChart'), {
-    type:'bar',
-    data:{ labels:Object.keys(state.pipeline), datasets:[{
-      data: Object.values(state.pipeline).map(d=>d.length),
-      backgroundColor:[getCSS('--cyan'),getCSS('--violet'),getCSS('--amber'),getCSS('--orange'),getCSS('--green')],
-      borderRadius:6, maxBarThickness:40
-    }]},
-    options:{ plugins:{legend:{display:false}}, scales:{
-      x:{grid:{display:false}}, y:{grid:{color:border}, ticks:{stepSize:1}}
-    }}
-  });
-
-  window.updateFunnelChart = function(){
-    if(!funnelChart) return;
-    funnelChart.data.datasets[0].data = Object.values(state.pipeline).map(d=>d.length);
-    funnelChart.update();
-  };
-
-  productChart = new Chart(document.getElementById('productChart'), {
-    type:'doughnut',
-    data:{ labels:["Enterprise Yearly","Growth Monthly","Growth Yearly","Starter Monthly"],
-      datasets:[{ data:[42,23,21,14], backgroundColor:[getCSS('--violet'),getCSS('--cyan'),getCSS('--green'),getCSS('--pink')], borderWidth:0 }]},
-    options:{ cutout:'62%', plugins:{legend:{position:'bottom', labels:{boxWidth:9, padding:14}}} }
-  });
-
-  const churnCtx = document.getElementById('churnChart').getContext('2d');
-  const churnGrad = churnCtx.createLinearGradient(0,0,0,220);
-  churnGrad.addColorStop(0, hexToRgba(getCSS('--red'), .35));
-  churnGrad.addColorStop(1, hexToRgba(getCSS('--red'), 0));
-
-  churnChart = new Chart(churnCtx, {
-    type:'line',
-    data:{ labels: months, datasets:[{
-      data:[2.1,2.4,2.2,2.8,3.0,2.9,3.1,2.7,3.0,3.2,3.0,3.4],
-      borderColor:getCSS('--red'), backgroundColor:churnGrad, fill:true, tension:.4, pointRadius:0, borderWidth:3
-    }]},
-    options:{ plugins:{legend:{display:false}}, scales:{
-      x:{grid:{color:border}}, y:{grid:{color:border}, ticks:{callback:v=>v+'%'}}
-    }}
-  });
-}
-function hexToRgba(hex, alpha){
-  hex = hex.trim();
-  if(hex.startsWith('#')){
-    const bigint = parseInt(hex.slice(1), 16);
-    const r=(bigint>>16)&255, g=(bigint>>8)&255, b=bigint&255;
-    return `rgba(${r},${g},${b},${alpha})`;
-  }
-  return hex;
-}
-function updateChartTheme(){
-  [revenueChart, funnelChart, productChart, churnChart].forEach(c => c && c.destroy());
-  buildCharts();
-}
-
-/* ================= Init ================= */
-function renderAll(){
-  renderKPIs(); renderExpiring(); renderCustomers(); renderSubs(); renderLedger(); renderAtRisk(); renderTickets(); renderKanban();
-}
-renderAll();
-buildCharts();
 </script>
 </body>
 </html>
